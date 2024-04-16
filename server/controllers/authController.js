@@ -1,4 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const { compare } = require("../util/hash");
 
@@ -38,7 +40,29 @@ const auth = async (req, res) => {
       throw new AuthError("Mot de passe incorrect !");
     }
 
-    res.status(201).json(user);
+    // Création des Tokens
+    const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN, {
+      expiresIn: "30m",
+    });
+
+    const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN, {
+      expiresIn: "30d",
+    });
+
+    // Un jour en millisecondes
+    const ONE_DAY = 24 * 60 * 60 * 1000;
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        refreshToken: refreshToken,
+      },
+    });
+
+    res.cookie("jwt", refreshToken, { httpOnly: true, maxAge: ONE_DAY });
+    res.status(201).json({accessToken : accessToken});
   } catch (error) {
     if (error instanceof AuthError) {
       res.status(400).json({ message: error.message });
@@ -48,4 +72,4 @@ const auth = async (req, res) => {
   }
 };
 
-module.exports = { auth };
+module.exports = { auth, AuthError };

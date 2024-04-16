@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 // Importation des fonctions utiles
 const { logger } = require("./middleware/logEvents");
 const errorHandler = require("./middleware/errorHandler");
+const { verifyJWT } = require("./middleware/verifyJWT");
 const corsOptions = require("./config/corsOptions");
 
 // Importation des routes
@@ -25,9 +26,13 @@ app.use(cors(corsOptions));
 app.use(logger);
 app.use(errorHandler);
 
-// Implémentation des routes
+// Implémentation des routes publiques (sans tokens)
 app.use("/register", registerRoute);
 app.use("/auth", authRoute);
+
+// Implémentation des routes privées (avec tokens)
+// Nécessite l'ajout du middleware de vérification des tokens d'accès
+app.use(verifyJWT);
 app.use("/user", userRoute);
 
 app.all("*", (req, res) => {

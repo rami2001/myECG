@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const { deleteUser, updateUser } = require("../controllers/userController");
+const { updateUser, deleteUser } = require("../controllers/userController");
 
-router.delete("/", deleteUser).put("/", updateUser);
+router.put("/", updateUser).delete("/", deleteUser);
 
 module.exports = router;

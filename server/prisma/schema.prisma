@@ -8,13 +8,14 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  username  String    @unique
-  password  String
-  pseudonym String
-  image     String?
-  profiles  Profile[]
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  username     String    @unique
+  password     String
+  pseudonym    String
+  image        String?
+  refreshToken String?
+  profiles     Profile[]
 }
 
 model Profile {
