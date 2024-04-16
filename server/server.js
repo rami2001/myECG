@@ -16,6 +16,7 @@ const authRoute = require("./routes/authRoute");
 const refreshRoute = require("./routes/refreshRoute");
 const logoutRoute = require("./routes/logoutRoute");
 const userRoute = require("./routes/userRoute");
+const profileRoute = require("./routes/profileRoute");
 
 // Pour les tests
 const adminRoute = require("./routes/adminRoute");
@@ -48,6 +49,7 @@ app.use("/logout", logoutRoute);
 // Nécessite l'ajout du middleware de vérification des tokens d'accès
 app.use(verifyJWT);
 app.use("/user", userRoute);
+app.use("/profile", profileRoute);
 
 app.all("*", (req, res) => {
   res.status(400).send("Ressource introuvable !");

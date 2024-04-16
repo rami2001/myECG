@@ -16,11 +16,19 @@ const verifyJWT = (req, res, next) => {
 
   const token = authHeader.split(" ")[1];
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
-    if (error) throw new TokenError("Token invalide.");
-    req.id = decoded.id;
-    next();
-  });
+  try {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
+      if (error) throw new TokenError("Token invalide.");
+      req.id = decoded.id;
+      next();
+    });
+  } catch (error) {
+    if (error instanceof TokenError) {
+      res.status(403).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: error.message });
+    }
+  }
 };
 
 module.exports = { verifyJWT, TokenError };
