@@ -44,6 +44,10 @@ const createUserTransaction = async (email, username, password, pseudonym) => {
 const isExistingUser = async (email, username) => {
   return (
     (await prisma.user.findFirst({
+      select: {
+        email: true,
+        username: true,
+      },
       where: {
         OR: [{ email: email }, { username: username }],
       },

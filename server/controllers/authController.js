@@ -3,6 +3,11 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const { compare } = require("../util/hash");
+const {
+  ACCESS_TOKEN_DURATION,
+  REFRESH_TOKEN_DURATION,
+  ONE_DAY_IN_MILLISECONDS,
+} = require("../util/global");
 
 const prisma = new PrismaClient();
 
@@ -24,11 +29,12 @@ const auth = async (req, res) => {
     }
 
     const user = await prisma.user.findFirst({
+      select: {
+        id: true,
+        password: true,
+      },
       where: {
         OR: [{ email: id }, { username: id }],
-      },
-      include: {
-        profiles: true,
       },
     });
 
@@ -41,16 +47,21 @@ const auth = async (req, res) => {
     }
 
     // Création des Tokens
-    const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN, {
-      expiresIn: "30m",
-    });
+    const accessToken = jwt.sign(
+      { id: user.id },
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: ACCESS_TOKEN_DURATION,
+      }
+    );
 
-    const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN, {
-      expiresIn: "30d",
-    });
-
-    // Un jour en millisecondes
-    const ONE_DAY = 24 * 60 * 60 * 1000;
+    const refreshToken = jwt.sign(
+      { id: user.id },
+      process.env.REFRESH_TOKEN_SECRET,
+      {
+        expiresIn: REFRESH_TOKEN_DURATION,
+      }
+    );
 
     await prisma.user.update({
       where: {
@@ -61,11 +72,15 @@ const auth = async (req, res) => {
       },
     });
 
-    res.cookie("jwt", refreshToken, { httpOnly: true, maxAge: ONE_DAY });
-    res.status(201).json({accessToken : accessToken});
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      maxAge: ONE_DAY_IN_MILLISECONDS,
+    });
+
+    res.status(201).json({ accessToken: accessToken });
   } catch (error) {
     if (error instanceof AuthError) {
-      res.status(400).json({ message: error.message });
+      res.status(403).json({ message: error.message });
     } else {
       res.status(500).json({ message: error.message });
     }

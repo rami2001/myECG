@@ -27,6 +27,11 @@ const deleteUser = async (req, res) => {
 const isExistingUser = async (id, email, username) => {
   return (
     (await prisma.user.findFirst({
+      select: {
+        id: true,
+        email: true,
+        username: true,
+      },
       where: {
         NOT: { id: id },
         OR: [{ email: email }, { username: username }],
