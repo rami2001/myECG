@@ -1,5 +1,7 @@
+require("dotenv").config();
+
 // Liste d'origines de requêtes permises
-const whitelist = ["http://localhost:3500"];
+const whitelist = [process.env.CLIENT, process.env.SERVER];
 
 const corsOptions = {
   origin: (origin, callblack) => {
