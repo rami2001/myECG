@@ -1,0 +1,11 @@
+13042024	02:52:20	4b3241df-1c58-4328-97c2-d61b9af34ef8	Error : Not allowed by CORS
+13042024	02:55:40	00335fe0-7275-46fb-98c8-61f1f5075c1a	Error : Not allowed by CORS
+13042024	03:39:18	80606bb0-d62a-443f-a01a-af267a62b3b2	SyntaxError : Unexpected token ''', ...""email" : 'titounram"... is not valid JSON
+13042024	03:41:49	3b12baec-abaf-488e-be52-7c028a1867f7	SyntaxError : Unexpected token ''', ..."ername" : 'a',
+    "... is not valid JSON
+13042024	03:42:36	65bb6bd9-1e3d-4cdf-af41-a65fc45066bd	SyntaxError : Unexpected token ''', ..."ername" : 'a',
+    "... is not valid JSON
+13042024	03:42:49	6414de9d-3532-4908-b39a-865f7f77ad7d	SyntaxError : Expected double-quoted property name in JSON at position 79
+13042024	03:44:52	1fe22197-548f-4f1b-b6c9-c57f87905cc2	SyntaxError : Expected double-quoted property name in JSON at position 79
+13042024	04:21:30	f88d300f-4e1e-4d2e-ab3e-0c715056d5e6	SyntaxError : Expected double-quoted property name in JSON at position 90
+13042024	04:22:06	52cfc3de-01c4-457f-a5f0-5e53455675a4	SyntaxError : Expected double-quoted property name in JSON at position 90
