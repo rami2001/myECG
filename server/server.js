@@ -5,9 +5,10 @@ const bodyParser = require("body-parser");
 // Importation des fonctions utiles
 const { logger } = require("./middleware/logEvents");
 const errorHandler = require("./middleware/errorHandler");
-import corsOptions from "./config/corsOptions";
+const corsOptions = require("./config/corsOptions");
 
 // Importation des routes
+const authRoute = require("./routes/authRoute");
 const userRoute = require("./routes/userRoute");
 
 // Initialisation du serveur
@@ -21,20 +22,17 @@ app.use(bodyParser.json());
 
 app.use(cors(corsOptions));
 
+// Implémentation des Logs
 app.use(logger);
+app.use(errorHandler);
 
-// Implementation des routes
-app.get("/", (req, res) => {
-  res.send("Hello World !");
-});
-
+// Implémentation des routes
+app.use("/auth", authRoute);
 app.use("/user", userRoute);
 
 app.all("*", (req, res) => {
   res.status(400).send("Ressource introuvable !");
 });
-
-app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Serveur lancé avec succès sur le port ${PORT}`);
