@@ -112,3 +112,6 @@
 16042024	02:13:52	02f1aa1b-0137-48a3-ab9a-34aa70045616	GET	undefined	/auth
 16042024	02:16:26	5596f8d0-f30a-413d-9673-4df64b99d85c	GET	undefined	/auth
 16042024	02:16:46	5c1b3489-21ed-435f-82c4-595713b76556	GET	undefined	/auth
+16042024	02:20:49	f7ea4aa1-d838-4e70-8042-e9a6edfcaac7	POST	undefined	/register
+16042024	02:25:21	5d822e8d-4cae-488f-88d5-d39aea0a2edf	POST	undefined	/register
+16042024	02:26:20	02c13c7c-8096-45b3-b23a-208cfd653251	POST	undefined	/register

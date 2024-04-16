@@ -4,6 +4,14 @@ const { hash } = require("../util/hash");
 
 const prisma = new PrismaClient();
 
+// Classe d'erreurs personnalisée
+class RegisterError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "RegisterError";
+  }
+}
+
 // Transaction qui permet de créer un utilisateur et son profile à la fois
 const createUserTransaction = async (email, username, password, pseudonym) => {
   return await prisma.$transaction(async (prisma) => {
@@ -47,17 +55,17 @@ const isExistingUser = async (email, username) => {
 const register = async (req, res) => {
   const { email, username, password, pseudonym } = req.body;
 
-  if (!email || !username || !password || !pseudonym) {
-    throw new Error("Champs manquant !");
-  }
-
-  if (await isExistingUser(email, username)) {
-    throw new Error("Cet utilisateur éxiste déjà !");
-  }
-
-  const hashedPassword = await hash(password);
-
   try {
+    if (!email || !username || !password || !pseudonym) {
+      throw new RegisterError("Champ(s) manquant(s) !");
+    }
+
+    if (await isExistingUser(email, username)) {
+      throw new RegisterError("Cet utilisateur éxiste déjà !");
+    }
+
+    const hashedPassword = await hash(password);
+
     const { user, profile } = await createUserTransaction(
       email,
       username,
@@ -67,7 +75,11 @@ const register = async (req, res) => {
 
     res.status(201).json({ ...user, profile: [profile] });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    if (error instanceof RegisterError) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: error.message });
+    }
   }
 };
 
