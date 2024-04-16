@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const { AuthError } = require("./authController");
+const { ACCESS_TOKEN_DURATION } = require("../util/global");
 
 const prisma = new PrismaClient();
 
@@ -49,7 +50,7 @@ const refresh = async (req, res) => {
         id: user.id,
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "30m" }
+      { expiresIn: ACCESS_TOKEN_DURATION }
     );
 
     res.status(201).json({ accessToken: accessToken });

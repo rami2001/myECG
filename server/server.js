@@ -5,9 +5,10 @@ const cookieParser = require("cookie-parser");
 
 // Importation des fonctions utiles
 const { logger } = require("./middleware/logEvents");
-const errorHandler = require("./middleware/errorHandler");
+const { credentials } = require("./middleware/credentials");
+const { errorHandler } = require("./middleware/errorHandler");
 const { verifyJWT } = require("./middleware/verifyJWT");
-const corsOptions = require("./config/corsOptions");
+const { corsOptions } = require("./config/corsOptions");
 
 // Importation des routes
 const registerRoute = require("./routes/registerRoute");
@@ -16,7 +17,7 @@ const refreshRoute = require("./routes/refreshRoute");
 const logoutRoute = require("./routes/logoutRoute");
 const userRoute = require("./routes/userRoute");
 
-//
+// Pour les tests
 const adminRoute = require("./routes/adminRoute");
 
 // Initialisation du serveur
@@ -26,6 +27,7 @@ const PORT = process.env.PORT || 3500;
 // Configuration du serveur
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(credentials);
 app.use(cors(corsOptions));
 app.use(cookieParser());
 
@@ -33,7 +35,7 @@ app.use(cookieParser());
 app.use(logger);
 app.use(errorHandler);
 
-//
+// Pour les tests
 app.use("/admin", adminRoute);
 
 // Implémentation des routes publiques (sans tokens)
@@ -53,5 +55,5 @@ app.all("*", (req, res) => {
 
 // Lancement du serveur
 app.listen(PORT, () => {
-  console.log(`Serveur lancé avec succès sur le port ${PORT}`);
+  console.log(`Serveur lancé avec succès.`);
 });
