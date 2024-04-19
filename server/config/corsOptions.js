@@ -5,7 +5,7 @@ const corsOptions = {
     if (allowedOrigins.includes(origin) || !origin) {
       callblack(null, true);
     } else {
-      callblack(new Error("Non permis par CORS"));
+      callblack(new Error("Non permis par CORS."));
     }
   },
 };

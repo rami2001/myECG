@@ -1,34 +1,34 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-// Classe d'erreurs personnalisée
-class TokenError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "AuthError";
-  }
-}
+const { RESPONSE } = require("../util/response");
 
 const verifyJWT = (req, res, next) => {
   const authHeader = req.headers["authorization"];
 
-  if (!authHeader) throw new TokenError("Token invalide.");
+  if (!authHeader) {
+    return res
+      .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
+      .json({ message: "Token invalide." });
+  }
 
   const token = authHeader.split(" ")[1];
 
   try {
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
-      if (error) throw new TokenError("Token invalide.");
+      if (error) {
+        return res
+          .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
+          .json({ message: "Token invalide." });
+      }
       req.id = decoded.id;
       next();
     });
   } catch (error) {
-    if (error instanceof TokenError) {
-      res.status(403).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: error.message });
-    }
+    res
+      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
-module.exports = { verifyJWT, TokenError };
+module.exports = { verifyJWT };

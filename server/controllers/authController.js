@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const { compare } = require("../util/hash");
+const { RESPONSE } = require("../util/response");
 const {
   ACCESS_TOKEN_DURATION,
   REFRESH_TOKEN_DURATION,
@@ -11,21 +12,16 @@ const {
 
 const prisma = new PrismaClient();
 
-// Classe d'erreurs personnalisée
-class AuthError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "AuthError";
-  }
-}
-
 // Authentification
 const auth = async (req, res) => {
   const { id, password } = req.body;
 
   try {
     if (!id || !password) {
-      throw new AuthError("Champs manquant !");
+      res
+        .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
+        .json({ message: "Champ(s) manquant(s) !" });
+      return;
     }
 
     const user = await prisma.user.findFirst({
@@ -39,11 +35,17 @@ const auth = async (req, res) => {
     });
 
     if (user === null) {
-      throw new AuthError("Compte introuvable !");
+      res
+        .status(RESPONSE.CLIENT_ERROR.NOT_FOUND)
+        .json({ message: "Compte introuvable." });
+      return;
     }
 
     if (!compare(password, user.password)) {
-      throw new AuthError("Mot de passe incorrect !");
+      res
+        .status(RESPONSE.CLIENT_ERROR.UNAUTHORIZED)
+        .json({ message: "Mot de passe incorrect !" });
+      return;
     }
 
     // Création des Tokens
@@ -77,14 +79,12 @@ const auth = async (req, res) => {
       maxAge: ONE_DAY_IN_MILLISECONDS,
     });
 
-    res.status(201).json({ accessToken: accessToken });
+    res.status(RESPONSE.SUCCESSFUL.CREATED).json({ accessToken: accessToken });
   } catch (error) {
-    if (error instanceof AuthError) {
-      res.status(403).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: error.message });
-    }
+    res
+      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
-module.exports = { auth, AuthError };
+module.exports = { auth };

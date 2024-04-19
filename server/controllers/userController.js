@@ -1,12 +1,11 @@
 const { PrismaClient } = require("@prisma/client");
 
-const { AuthError } = require("./authController");
-const { TokenError } = require("../middleware/verifyJWT");
 const { hash } = require("../util/hash");
+const { RESPONSE } = require("../util/response");
 
 const prisma = new PrismaClient();
 
-// Supression d'un utilisateur
+// Suppression d'un utilisateur
 const deleteUser = async (req, res) => {
   const { id } = req.body;
 
@@ -17,13 +16,17 @@ const deleteUser = async (req, res) => {
       },
     });
 
-    res.status(201).json({ message: "Utilisateur supprimé" });
+    res
+      .status(RESPONSE.SUCCESSFUL.NO_CONTENT)
+      .json({ message: "Utilisateur supprimé" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res
+      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
-// Vérifier si un utilisateur éxiste déjà
+// Vérifier si un utilisateur existe déjà
 const isExistingUser = async (id, email, username) => {
   return (
     (await prisma.user.findFirst({
@@ -45,13 +48,15 @@ const updateUser = async (req, res) => {
 
   try {
     if (!id || !email || !username || !password || !pseudonym) {
-      throw new AuthError("Champ(s) manquant(s) !");
+      return res
+        .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
+        .json({ message: "Champ(s) manquant(s) !" });
     }
 
     if (await isExistingUser(id, email, username)) {
-      throw new AuthError(
-        "Cette adresse mail ou ce nom d'utilisateur sont déjà pris."
-      );
+      return res.status(RESPONSE.CLIENT_ERROR.CONFLICT).json({
+        message: "Cette adresse mail ou ce nom d'utilisateur sont déjà pris.",
+      });
     }
 
     const hashedPassword = await hash(password);
@@ -68,13 +73,13 @@ const updateUser = async (req, res) => {
       },
     });
 
-    res.status(201).json({ message: "Informations mises à jour avec succès." });
+    res
+      .status(RESPONSE.SUCCESSFUL.CREATED)
+      .json({ message: "Informations mises à jour avec succès." });
   } catch (error) {
-    if (error instanceof TokenError) {
-      res.status(400).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: error.message });
-    }
+    res
+      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 

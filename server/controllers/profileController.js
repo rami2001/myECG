@@ -1,16 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
 
+const { RESPONSE } = require("../util/response");
+
 const prisma = new PrismaClient();
 
-// Classe d'erreurs personnalisée
-class ProfileError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "ProfileError";
-  }
-}
-
-// Vérifier si un profil éxiste déjà
+// Vérifier si un profil existe déjà
 const isExistingProfile = async (id, username) => {
   return (
     (await prisma.profile.findFirst({
@@ -41,17 +35,46 @@ const profileWithUsername = async (id, profileId) => {
   });
 };
 
+// Obtention de tous les profils associés à un utilisateur
+const getProfiles = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const profiles = await prisma.profile.findMany({
+      where: {
+        userId: id,
+      },
+    });
+
+    if (!profiles || profiles.length === 0) {
+      return res
+        .status(RESPONSE.CLIENT_ERROR.NOT_FOUND)
+        .json({ message: "Aucun profil trouvé pour cet utilisateur." });
+    }
+
+    res.status(RESPONSE.SUCCESSFUL.OK).json(profiles);
+  } catch (error) {
+    res
+      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
 // Création d'un profil
 const createProfile = async (req, res) => {
   const { id, username, pseudonym } = req.body;
 
   try {
     if (!id || !username || !pseudonym) {
-      throw new ProfileError("Champ(s) manquant(s) !");
+      return res
+        .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
+        .json({ message: "Champ(s) manquant(s) !" });
     }
 
     if (await isExistingProfile(id, username)) {
-      throw new ProfileError("Ce profil éxiste déjà.");
+      return res
+        .status(RESPONSE.CLIENT_ERROR.CONFLICT)
+        .json({ message: "Ce profil existe déjà." });
     }
 
     await prisma.profile.create({
@@ -62,32 +85,35 @@ const createProfile = async (req, res) => {
       },
     });
 
-    res.status(201).json({ message: "Profil ajouté avec succès." });
+    res
+      .status(RESPONSE.SUCCESSFUL.CREATED)
+      .json({ message: "Profil ajouté avec succès." });
   } catch (error) {
-    if (error instanceof ProfileError) {
-      res.status(400).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: error.message });
-    }
+    res
+      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
-// Mise à jour d'un profile
+// Mise à jour d'un profil
 const updateProfile = async (req, res) => {
-  const { id, profileId, username, pseudonym } = req.body;
+  const { profileId, username, pseudonym } = req.body;
 
   try {
-    if (!id || !profileId || !username || !pseudonym) {
-      throw new ProfileError("Champ(s) manquant(s) !");
+    if (!profileId || !username || !pseudonym) {
+      return res
+        .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
+        .json({ message: "Champ(s) manquant(s) !" });
     }
 
     if (await isExistingProfile(id, username)) {
-      throw new ProfileError("Ce profil éxiste déjà.");
+      return res
+        .status(RESPONSE.CLIENT_ERROR.CONFLICT)
+        .json({ message: "Ce profil existe déjà." });
     }
 
     await prisma.profile.update({
       where: {
-        userId: id,
         id: profileId,
       },
       data: {
@@ -96,17 +122,17 @@ const updateProfile = async (req, res) => {
       },
     });
 
-    res.status(201).json({ message: "Profil mis à jour avec succès." });
+    res
+      .status(RESPONSE.SUCCESSFUL.CREATED)
+      .json({ message: "Profil mis à jour avec succès." });
   } catch (error) {
-    if (error instanceof ProfileError) {
-      res.status(400).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: error.message });
-    }
+    res
+      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
-// Suppresion d'un profil
+// Suppression d'un profil
 const deleteProfile = async (req, res) => {
   const { id, profileId } = req.body;
 
@@ -114,11 +140,15 @@ const deleteProfile = async (req, res) => {
     const existingProfile = await profileWithUsername(id, profileId);
 
     if (!existingProfile) {
-      throw new ProfileError("Ce profil n'existe pas.");
+      return res
+        .status(RESPONSE.CLIENT_ERROR.NOT_FOUND)
+        .json({ message: "Ce profil n'existe pas." });
     }
 
     if (existingProfile.user.username === existingProfile.username) {
-      throw new ProfileError("Impossible de supprimer le profil de base.");
+      return res
+        .status(RESPONSE.CLIENT_ERROR.FORBIDDEN)
+        .json({ message: "Impossible de supprimer le profil de base." });
     }
 
     // Supprimer le profil s'il n'y a pas d'erreur
@@ -129,14 +159,14 @@ const deleteProfile = async (req, res) => {
       },
     });
 
-    res.status(201).json({ message: "Profil supprimé." });
+    res
+      .status(RESPONSE.SUCCESSFUL.NO_CONTENT)
+      .json({ message: "Profil supprimé." });
   } catch (error) {
-    if (error instanceof ProfileError) {
-      res.status(400).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: error.message });
-    }
+    res
+      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
-module.exports = { createProfile, updateProfile, deleteProfile };
+module.exports = { getProfiles, createProfile, updateProfile, deleteProfile };

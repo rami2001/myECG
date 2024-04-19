@@ -1,12 +1,14 @@
 const { PrismaClient } = require("@prisma/client");
 
+const { RESPONSE } = require("../util/response");
+
 const prisma = new PrismaClient();
 
 const logout = async (req, res) => {
   const cookies = req.cookies;
 
   try {
-    if (!cookies?.jwt) return res.sendStatus(204);
+    if (!cookies?.jwt) return res.sendStatus(RESPONSE.SUCCESSFUL.NO_CONTENT);
 
     const refreshToken = cookies.jwt;
 
@@ -21,7 +23,7 @@ const logout = async (req, res) => {
 
     if (user === null) {
       res.clearCookie("jwt", { httpOnly: true });
-      return res.sendStatus(204);
+      return res.sendStatus(RESPONSE.SUCCESSFUL.NO_CONTENT);
     }
 
     await prisma.user.update({
@@ -35,9 +37,11 @@ const logout = async (req, res) => {
 
     res.clearCookie("jwt", { httpOnly: true });
 
-    return res.sendStatus(204);
+    res.sendStatus(RESPONSE.SUCCESSFUL.NO_CONTENT);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res
+      .status(RESPONSE.SUCCESSFUL.NO_CONTENT)
+      .json({ message: error.message });
   }
 };
 

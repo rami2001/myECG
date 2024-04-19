@@ -10,11 +10,13 @@ const { errorHandler } = require("./middleware/errorHandler");
 const { verifyJWT } = require("./middleware/verifyJWT");
 const { corsOptions } = require("./config/corsOptions");
 
-// Importation des routes
+// Importation des routes publiques
 const registerRoute = require("./routes/registerRoute");
 const authRoute = require("./routes/authRoute");
 const refreshRoute = require("./routes/refreshRoute");
 const logoutRoute = require("./routes/logoutRoute");
+
+// Importation des routes privées
 const userRoute = require("./routes/userRoute");
 const profileRoute = require("./routes/profileRoute");
 

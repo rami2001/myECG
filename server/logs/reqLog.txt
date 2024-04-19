@@ -235,3 +235,8 @@
 16042024	10:57:15	369cdebf-e8e2-47ed-830c-e161d85a86ba	DELETE	undefined	/profile
 16042024	11:01:52	6f18fad7-fa40-40c6-bd95-112477f77c02	DELETE	undefined	/profile
 16042024	11:02:08	659a686a-bf6d-41da-82cd-f156fb93f99a	DELETE	undefined	/profile
+19042024	07:29:05	3ce056a7-6b79-41d0-a920-8ac9dff1ef7d	POST	undefined	/register
+19042024	07:32:24	d70bbc96-b26f-44f5-b228-3dcc41398921	GET	undefined	/logout
+19042024	07:32:44	25ba14d0-3d38-4c93-93e3-1acf6e025bdc	GET	undefined	/auth
+19042024	07:33:34	5baea451-4156-44e6-acdc-82d92bf8a0f5	PUT	undefined	/user
+19042024	07:34:19	7daf3df2-d14b-4d94-99db-5d0f501e0e03	POST	undefined	/profile
