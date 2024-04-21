@@ -1,3 +1,163 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --background-50 : #fafafa;
+    --background-100 : #f4f4f5;
+    --background-200 : #e4e4e7;
+    --background-300 : #d4d4d8;
+    --background-400 : #a1a1aa;
+
+    --foreground-400 :#0c0a09;
+    --foreground-300 : #1c1917;
+    --foreground-200 : #292524;
+    --foreground-100 : #44403c;
+    --foreground-50 : #a8a29e;
+
+    --brand-50: #FCE0EC;
+    --brand-100: #F6A3C5;
+    --brand-200: #FFA1C9;
+    --brand-300: #F94892;
+    --brand-400: #E60965;
+    --brand-500: #AC074C;
+    --brand-600: #730533;
+    --brand-700: #560326;
+    --brand-800: #390219;
+    --brand-900: #1D010D;
+
+    --accent-50: #A2F2D3;
+    --accent-100: #70EFD7;
+    --accent-200: #3DE9BC;
+    --accent-400: #09E68A;
+    --accent-300: #19D7A1;
+    --accent-500: #00AF7C;
+    --accent-600: #008457;
+    --accent-700: #005E3A;
+    --accent-800: #003822;
+    --accent-900: #001E0E;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background-50 : #0c0a09;
+      --background-100 : #1c1917;
+      --background-200 : #292524;
+      --background-300 : #44403c;
+      --background-400 : #a8a29e;
+  
+      --foreground-400 :#fafafa;
+      --foreground-300 : #f4f4f5;
+      --foreground-200 : #e4e4e7;
+      --foreground-100 : #d4d4d8;
+      --foreground-50 :  #a1a1aa;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --background-50 : #0c0a09;
+    --background-100 : #1c1917;
+    --background-200 : #292524;
+    --background-300 : #44403c;
+    --background-400 : #a8a29e;
+
+    --foreground-400 :#fafafa;
+    --foreground-300 : #f4f4f5;
+    --foreground-200 : #e4e4e7;
+    --foreground-100 : #d4d4d8;
+    --foreground-50 :  #a1a1aa;
+  }
+
+  :root[data-theme="light"] {
+    --background-50 : #fafafa;
+    --background-100 : #f4f4f5;
+    --background-200 : #e4e4e7;
+    --background-300 : #d4d4d8;
+    --background-400 : #a1a1aa;
+
+    --foreground-400 :#0c0a09;
+    --foreground-300 : #1c1917;
+    --foreground-200 : #292524;
+    --foreground-100 : #44403c;
+    --foreground-50 : #a8a29e;
+  }
+
+  @font-face {
+    font-family: "Poppins";
+    font-weight: 100;
+    src: url("/fonts/Poppins-ExtraLight.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "Poppins";
+    font-weight: 200;
+    src: url("/fonts/Poppins-Light.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "Poppins";
+    font-weight: 300;
+    src: url("/fonts/Poppins-Regular.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "Poppins";
+    font-weight: 400;
+    src: url("/fonts/Poppins-Medium.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "Poppins";
+    font-weight: 500;
+    src: url("/fonts/Poppins-SemiBold.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "Poppins";
+    font-weight: 600;
+    src: url("/fonts/Poppins-Bold.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "Poppins";
+    font-weight: 700;
+    src: url("/fonts/Poppins-ExtraBold.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "Poppins";
+    font-weight: 800;
+    src: url("/fonts/Poppins-Black.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "DM Mono";
+    font-weight: 100;
+    src: url("/fonts/DMMono-Light.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "DM Mono";
+    font-weight: 200;
+    src: url("/fonts/DMMono-Light.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "DM Mono";
+    font-weight: 300;
+    src: url("/fonts/DMMono-Regular.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "DM Mono";
+    font-weight: 400;
+    src: url("/fonts/DMMono-Regular.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "DM Mono";
+    font-weight: 500;
+    src: url("/fonts/DMMono-Medium.ttf") format("truetype");
+  }
+}

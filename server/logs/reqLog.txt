@@ -240,3 +240,14 @@
 19042024	07:32:44	25ba14d0-3d38-4c93-93e3-1acf6e025bdc	GET	undefined	/auth
 19042024	07:33:34	5baea451-4156-44e6-acdc-82d92bf8a0f5	PUT	undefined	/user
 19042024	07:34:19	7daf3df2-d14b-4d94-99db-5d0f501e0e03	POST	undefined	/profile
+20042024	10:02:33	8a0fe3ad-779e-4167-89d0-6c7d6b85086a	POST	http://localhost:5173	/register
+20042024	10:05:06	920c406f-1b4c-4290-9639-629db2506d62	POST	http://localhost:5173	/register
+20042024	10:45:59	17708a37-c611-4de2-93c4-cc54eeeb33f7	POST	http://localhost:5173	/register
+20042024	10:48:14	c7ad9ffa-ae0c-4a9e-934c-8256cd17e111	POST	http://localhost:5173	/register
+20042024	10:49:16	edb60a3f-2624-4eb4-a064-6f75ffdd0e35	POST	http://localhost:5173	/register
+20042024	10:50:08	f376f8d2-316b-4fa3-b4c5-d61b9f8e3ece	POST	http://localhost:5173	/register
+20042024	10:50:36	548021af-200b-498f-a948-2ad2a776d197	POST	http://localhost:5173	/register
+20042024	10:52:44	47c679c1-5b9d-4458-9709-cbad64dcbcbc	POST	http://localhost:5173	/register
+20042024	10:55:04	ce8bd1db-2e88-4505-b79e-a7d3b6e2e2ce	POST	http://localhost:5173	/register
+20042024	10:55:16	a5062071-5fe3-4d4b-8f3a-36bc65b0775b	POST	http://localhost:5173	/register
+20042024	10:56:03	3389dcba-d26e-47fc-85e2-323e231e6c64	POST	http://localhost:5173	/register

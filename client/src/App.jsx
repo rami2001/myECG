@@ -1,9 +1,9 @@
-import Inscription from "./components/Inscription";
+import Register from "./components/register/Register";
 
 function App() {
   return (
-    <main>
-      <Inscription />
+    <main className="font-poppins bg-emerald-800 h-screen p-6 text-foreground-400">
+      <Register />
     </main>
   );
 }

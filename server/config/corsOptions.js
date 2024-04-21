@@ -8,6 +8,7 @@ const corsOptions = {
       callblack(new Error("Non permis par CORS."));
     }
   },
+  optionsSuccessStatus: 200,
 };
 
 module.exports = { corsOptions };

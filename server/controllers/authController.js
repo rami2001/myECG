@@ -76,6 +76,8 @@ const auth = async (req, res) => {
 
     res.cookie("jwt", refreshToken, {
       httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
       maxAge: ONE_DAY_IN_MILLISECONDS,
     });
 
