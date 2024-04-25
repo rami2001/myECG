@@ -161,3 +161,9 @@
     src: url("/fonts/DMMono-Medium.ttf") format("truetype");
   }
 }
+
+@layer components {
+  .wrapper {
+    height: 100%;
+  }
+}

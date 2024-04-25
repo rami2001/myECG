@@ -6,7 +6,14 @@ const { RESPONSE } = require("../util/response");
 const prisma = new PrismaClient();
 
 // Transaction qui permet de créer un utilisateur et son profile à la fois
-const createUserTransaction = async (email, username, password, pseudonym) => {
+const createUserTransaction = async (
+  email,
+  username,
+  password,
+  pseudonym,
+  gender,
+  dateOfBirth
+) => {
   return await prisma.$transaction(async (prisma) => {
     const user = await prisma.user.create({
       data: {
@@ -14,6 +21,8 @@ const createUserTransaction = async (email, username, password, pseudonym) => {
         username: username,
         password: password,
         pseudonym: pseudonym,
+        dateOfBirth: new Date(dateOfBirth),
+        gender: gender,
       },
     });
 
@@ -21,6 +30,8 @@ const createUserTransaction = async (email, username, password, pseudonym) => {
       data: {
         username: username,
         pseudonym: pseudonym,
+        gender: gender,
+        dateOfBirth: new Date(dateOfBirth),
         user: {
           connect: {
             id: user.id,
@@ -48,12 +59,45 @@ const isExistingUser = async (email, username) => {
   );
 };
 
-// Création d'un utilisateur (inscription)
-const register = async (req, res) => {
-  const { email, username, password, pseudonym } = req.body;
+// Vérifie si un utilisateur éxiste déjà
+const checkIfIsExistingUser = async (req, res) => {
+  const { email, username } = req.body;
 
   try {
-    if (!email || !username || !password || !pseudonym) {
+    if (!email || !username) {
+      return res
+        .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
+        .json({ message: "Champ(s) manquant(s) !" });
+    }
+
+    if (await isExistingUser(email, username)) {
+      return res
+        .status(RESPONSE.CLIENT_ERROR.CONFLICT)
+        .json({ message: "Cet utilisateur éxiste déjà !" });
+    }
+
+    res.sendStatus(RESPONSE.SUCCESSFUL.OK);
+  } catch (error) {
+    res
+      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
+// Création d'un utilisateur (inscription)
+const register = async (req, res) => {
+  const { email, username, password, pseudonym, dateOfBirth, gender } =
+    req.body;
+
+  try {
+    if (
+      !email ||
+      !username ||
+      !password ||
+      !pseudonym ||
+      !gender ||
+      !dateOfBirth
+    ) {
       return res
         .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
         .json({ message: "Champ(s) manquant(s) !" });
@@ -67,16 +111,16 @@ const register = async (req, res) => {
 
     const hashedPassword = await hash(password);
 
-    const { user, profile } = await createUserTransaction(
+    await createUserTransaction(
       email,
       username,
       hashedPassword,
-      pseudonym
+      pseudonym,
+      gender,
+      dateOfBirth
     );
 
-    res
-      .status(RESPONSE.SUCCESSFUL.CREATED)
-      .json({ ...user, profile: [profile] });
+    res.sendStatus(RESPONSE.SUCCESSFUL.CREATED);
   } catch (error) {
     res
       .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
@@ -84,4 +128,4 @@ const register = async (req, res) => {
   }
 };
 
-module.exports = { register };
+module.exports = { register, checkIfIsExistingUser };
