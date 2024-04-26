@@ -90,14 +90,7 @@ const register = async (req, res) => {
     req.body;
 
   try {
-    if (
-      !email ||
-      !username ||
-      !password ||
-      !pseudonym ||
-      !gender ||
-      !dateOfBirth
-    ) {
+    if (!email || !username || !password || !gender || !dateOfBirth) {
       return res
         .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
         .json({ message: "Champ(s) manquant(s) !" });

@@ -41,7 +41,9 @@ const auth = async (req, res) => {
       return;
     }
 
-    if (!compare(password, user.password)) {
+    const correctPassword = await compare(password, user.password);
+
+    if (!correctPassword) {
       res
         .status(RESPONSE.CLIENT_ERROR.UNAUTHORIZED)
         .json({ message: "Mot de passe incorrect !" });

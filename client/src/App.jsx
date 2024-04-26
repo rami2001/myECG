@@ -1,12 +1,12 @@
-import Inscription from "./components/register/Inscription";
+import Layout from "@/pages/public/layout/Layout";
+import UserForm from "@/components/register/UserForm";
+import AuthForm from "./pages/public/login/AuthForm";
 
 function App() {
   return (
-    <main className="font-poppins bg-neutral-900 min-h-screen p-6 text-foreground-400 px-12 py-[10vh]">
-      <section className="relative bg-background-50 py-10 px-6 rounded-2xl h-[80vh] overflow-auto">
-        <Inscription />
-      </section>
-    </main>
+    <Layout>
+      <AuthForm />
+    </Layout>
   );
 }
 
