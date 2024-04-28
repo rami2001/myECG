@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+
+import useAuth from "@/hooks/useAuth";
 import { auth } from "@/api/userController";
 import { authSchema } from "@/lib/formSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,19 +30,22 @@ const AuthForm = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const { setUser, setCurrentProfile } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const onSubmit = async (values) => {
     const { id, password } = values;
     setLoading(true);
 
     try {
-      console.log(await auth(id, password));
-      toast({
-        title: "Connexion avec succès !",
-        description: "Rendez-vous à la page de connexion.",
-      });
+      const response = await auth(id, password);
+      setUser(response.data);
+      setCurrentProfile(response.data.profiles[0]);
+
+      navigate("/dashboard", { replace: true });
     } catch (error) {
+      console.log(error);
       if (!error?.response) {
         toast({
           variant: "destructive",
@@ -60,10 +66,7 @@ const AuthForm = () => {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="px-4 md:px-6 md:w-[75%] lg:px-12 py-6 md:py-8 lg:py-12 space-y-4 lg:w-1/2"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="id"
@@ -111,8 +114,9 @@ const AuthForm = () => {
               variant="link"
               disabled={loading}
               className="w-full lg:w-[initial] text-center"
+              asChild
             >
-              &larr; Revenir à l'accueil
+              <Link to="/home">&larr; Revenir à l'accueil</Link>
             </Button>
           </div>
         </div>

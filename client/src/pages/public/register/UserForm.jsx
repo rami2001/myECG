@@ -26,6 +26,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { registerSchema } from "@/lib/formSchemas";
 import ButtonLoading from "@/components/custom_ui/ButtonLoading";
+import { Link } from "react-router-dom";
 
 const UserForm = ({ user = null }) => {
   const currentDate = Date.now();
@@ -186,8 +187,9 @@ const UserForm = ({ user = null }) => {
               variant="link"
               disabled={loading}
               className="w-full lg:w-[initial] text-center"
+              asChild
             >
-              &larr; Revenir à l'accueil
+              <Link to="/home">&larr; Revenir à l'accueil</Link>
             </Button>
           </div>
         </div>

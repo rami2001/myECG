@@ -25,12 +25,11 @@ const auth = async (req, res) => {
     }
 
     const user = await prisma.user.findFirst({
-      select: {
-        id: true,
-        password: true,
-      },
       where: {
         OR: [{ email: id }, { username: id }],
+      },
+      include: {
+        profiles: true,
       },
     });
 
@@ -83,7 +82,9 @@ const auth = async (req, res) => {
       maxAge: ONE_DAY_IN_MILLISECONDS,
     });
 
-    res.status(RESPONSE.SUCCESSFUL.CREATED).json({ accessToken: accessToken });
+    res
+      .status(RESPONSE.SUCCESSFUL.CREATED)
+      .json({ ...user, accessToken: accessToken });
   } catch (error) {
     res
       .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
