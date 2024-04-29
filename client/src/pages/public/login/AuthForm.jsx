@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import ButtonLoading from "@/components/custom_ui/ButtonLoading";
 
 const AuthForm = () => {
   const form = useForm({
@@ -49,7 +48,7 @@ const AuthForm = () => {
       if (!error?.response) {
         toast({
           variant: "destructive",
-          title: "Vous n'ête pas connecté à internet.",
+          title: "Vous n'êtes pas connecté à internet.",
           description: "Veuillez réessayer.",
         });
       } else {
@@ -97,19 +96,13 @@ const AuthForm = () => {
         />
         <br />
         <div className="flex flex-col space-y-2">
-          {loading ? (
-            <ButtonLoading className="w-full lg:w-[initial]">
-              Chargement
-            </ButtonLoading>
-          ) : (
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full lg:w-[initial]"
-            >
-              Se connecter
-            </Button>
-          )}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full lg:w-[initial]"
+          >
+            {loading ? "Chargement" : "Se connecter"}
+          </Button>
           <Button
             variant="link"
             disabled={loading}

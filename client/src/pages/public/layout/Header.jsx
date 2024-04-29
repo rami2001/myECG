@@ -156,7 +156,7 @@ const Header = () => {
                           isActive,
                       },
                       {
-                        "bg-primary text-background hover:no-underline hover:bg-primary/80":
+                        "bg-primary text-primary-foreground hover:no-underline hover:bg-primary/80":
                           !isActive,
                       }
                     )}

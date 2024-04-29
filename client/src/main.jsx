@@ -25,12 +25,12 @@ import ApiPage from "@/pages/public/api/ApiPage";
 import PrivateLayout from "@/pages/private/layout/PrivateLayout";
 import ProfilesPage from "@/pages/private/profiles/ProfilesPage";
 import DashboardPage from "@/pages/private/dasboard/DashboardPage";
-import AccountPage from "@/pages/private/account/AccountPage";
+import SettingsPage from "@/pages/private/settings/SettingsPage";
+import EcgPage from "@/pages/private/ecg/EcgPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    errorElement: <Missing />,
     children: [
       {
         path: "home/",
@@ -67,12 +67,16 @@ const router = createBrowserRouter([
             element: <DashboardPage />,
           },
           {
-            path: "account",
-            element: <AccountPage />,
-          },
-          {
             path: "profiles",
             element: <ProfilesPage />,
+          },
+          {
+            path: "settings",
+            element: <SettingsPage />,
+          },
+          {
+            path: "ecg",
+            element: <EcgPage />,
           },
         ],
       },

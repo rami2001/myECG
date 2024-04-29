@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getYear } from "date-fns";
-
 import { register } from "@/api/userController";
 
-import DatePicker from "@/components/custom_ui/DatePicker";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,26 +22,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { registerSchema } from "@/lib/formSchemas";
-import ButtonLoading from "@/components/custom_ui/ButtonLoading";
 import { Link } from "react-router-dom";
+import { registerSchema } from "@/lib/formSchemas";
 
-const UserForm = ({ user = null }) => {
-  const currentDate = Date.now();
-  const maxYear = getYear(currentDate) - 150;
-  const minYear = getYear(currentDate) - 12;
-
+const UserForm = () => {
   const form = useForm({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      email: "",
-      username: "",
-      pseudonym: "",
-      gender: null,
-      dateOfBirth: null,
-      password: "",
-      confirm: "",
-    },
   });
 
   const [loading, setLoading] = useState(false);
@@ -64,7 +48,7 @@ const UserForm = ({ user = null }) => {
       if (!error?.response) {
         toast({
           variant: "destructive",
-          title: "Vous n'ête pas connecté à internet.",
+          title: "Vous n'êtes pas connecté à internet.",
           description: "Veuillez réessayer.",
         });
       } else {
@@ -89,7 +73,12 @@ const UserForm = ({ user = null }) => {
             <FormItem>
               <FormLabel className="sr-only">Adresse e-mail</FormLabel>
               <FormControl>
-                <Input placeholder="Adresse mail" {...field} />
+                <Input
+                  disabled={loading}
+                  type="email"
+                  placeholder="Adresse mail"
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="font-normal text-xs" />
             </FormItem>
@@ -102,37 +91,47 @@ const UserForm = ({ user = null }) => {
             <FormItem>
               <FormLabel className="sr-only">Username</FormLabel>
               <FormControl>
-                <Input placeholder="Nom d'utilisateur" {...field} />
+                <Input
+                  disabled={loading}
+                  placeholder="Nom d'utilisateur"
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="font-normal text-xs" />
             </FormItem>
           )}
         />
-        <div className="lg:flex lg:justify-between lg:gap-12 space-y-4 lg:space-y-0">
-          <Select
-            className="lg:w-2/5"
-            onValueChange={(value) => form.setValue("gender", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Genre" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="male">Homme</SelectItem>
-              <SelectItem value="female">Femme</SelectItem>
-            </SelectContent>
-          </Select>
-          <DatePicker
-            placeholder="Date de naîssance"
-            defaultValue={null}
-            fromYear={maxYear}
-            toYear={minYear}
-            onChange={(date) => {
-              if (date) {
-                form.setValue("dateOfBirth", date);
-              }
-            }}
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name="dateOfBirth"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="sr-only">Username</FormLabel>
+              <FormControl>
+                <Input
+                  disabled={loading}
+                  type="date"
+                  placeholder="Date de naîssance"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage className="font-normal text-xs" />
+            </FormItem>
+          )}
+        />
+        <Select
+          className="lg:w-2/5"
+          disabled={loading}
+          onValueChange={(value) => form.setValue("gender", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Genre" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="male">Homme</SelectItem>
+            <SelectItem value="female">Femme</SelectItem>
+          </SelectContent>
+        </Select>
         <FormField
           control={form.control}
           name="password"
@@ -140,7 +139,12 @@ const UserForm = ({ user = null }) => {
             <FormItem>
               <FormLabel className="sr-only">Mot de passe</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Mot de passe" {...field} />
+                <Input
+                  disabled={loading}
+                  type="password"
+                  placeholder="Mot de passe"
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="font-normal text-xs" />
             </FormItem>
@@ -157,6 +161,7 @@ const UserForm = ({ user = null }) => {
               <FormControl>
                 <Input
                   type="password"
+                  disabled={loading}
                   placeholder="Confirmation du mot de passe"
                   {...field}
                 />
@@ -167,19 +172,13 @@ const UserForm = ({ user = null }) => {
         />
         <div>
           <div className="lg:flex lg:flex-row-reverse lg:justify-between lg:align-middle mt-12">
-            {loading ? (
-              <ButtonLoading className="w-full lg:w-[initial]">
-                Chargement
-              </ButtonLoading>
-            ) : (
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full lg:w-[initial]"
-              >
-                S'inscrire
-              </Button>
-            )}
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full lg:w-[initial]"
+            >
+              S'inscrire
+            </Button>
             <Button
               variant="link"
               disabled={loading}

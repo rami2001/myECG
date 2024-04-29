@@ -11,7 +11,13 @@ import {
 } from "@/components/ui/popover";
 import CustomCalendar from "@/components/custom_ui/CustomCalendar";
 
-function DatePicker({ placeholder, defaultValue, fromYear, toYear, onChange }) {
+function DatePicker({
+  placeholder,
+  defaultValue = null,
+  fromYear,
+  toYear,
+  onChange,
+}) {
   const [date, setDate] = useState(defaultValue);
 
   return (
@@ -32,7 +38,7 @@ function DatePicker({ placeholder, defaultValue, fromYear, toYear, onChange }) {
         <CustomCalendar
           onSelect={(date) => {
             setDate(date);
-            onChange?.(date);
+            onChange(date);
           }}
           mode="single"
           captionLayout="dropdown-buttons"

@@ -18,6 +18,17 @@ const isExistingProfile = async (id, username) => {
   );
 };
 
+const getProfileByUsername = async (id, username) => {
+  return await prisma.profile.findFirst({
+    where: {
+      AND: {
+        userId: id,
+        username: username,
+      },
+    },
+  });
+};
+
 // Obtenir un profil et le nom d'utilisateur du compte associé (et non le profile)
 const profileWithUsername = async (id, profileId) => {
   return await prisma.profile.findFirst({
@@ -97,34 +108,43 @@ const createProfile = async (req, res) => {
 
 // Mise à jour d'un profil
 const updateProfile = async (req, res) => {
-  const { profileId, username, pseudonym } = req.body;
+  const { id, profileId, username, pseudonym, gender, dateOfBirth } = req.body;
 
   try {
-    if (!profileId || !username || !pseudonym) {
+    if (
+      !id ||
+      !profileId ||
+      !username ||
+      !pseudonym ||
+      !gender ||
+      !dateOfBirth
+    ) {
       return res
         .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
         .json({ message: "Champ(s) manquant(s) !" });
     }
 
-    if (await isExistingProfile(id, username)) {
+    const profile = await getProfileByUsername(id, username);
+
+    if (profile.id !== profileId) {
       return res
         .status(RESPONSE.CLIENT_ERROR.CONFLICT)
         .json({ message: "Ce profil existe déjà." });
     }
 
-    await prisma.profile.update({
+    const updatedProfile = await prisma.profile.update({
       where: {
         id: profileId,
       },
       data: {
         username,
         pseudonym,
+        gender,
+        dateOfBirth,
       },
     });
 
-    res
-      .status(RESPONSE.SUCCESSFUL.CREATED)
-      .json({ message: "Profil mis à jour avec succès." });
+    res.status(RESPONSE.SUCCESSFUL.CREATED).json({ updatedProfile });
   } catch (error) {
     res
       .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)

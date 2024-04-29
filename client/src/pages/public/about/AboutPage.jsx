@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 
-import Section from "@/components/custom_ui/Section";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +24,7 @@ const AboutPage = () => {
       </section>
       <section className="my-16 px-4 lg:px-8">
         <h1>Notre équipe</h1>
-        <Section className="mt-8">
+        <section className="mt-8">
           <div className="grid h-auto gap-4 lg:grid-cols-3">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -58,7 +57,7 @@ const AboutPage = () => {
               </CardContent>
             </Card>
           </div>
-        </Section>
+        </section>
       </section>
     </section>
   );

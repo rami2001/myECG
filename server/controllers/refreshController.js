@@ -10,18 +10,20 @@ const prisma = new PrismaClient();
 // Obtention d'un nouveau Token d'accès
 const refresh = async (req, res) => {
   const cookies = req.cookies;
+
+  if (!cookies?.jwt) {
+    return res
+      .status(RESPONSE.CLIENT_ERROR.UNAUTHORIZED)
+      .json({ message: "Cookies introuvables." });
+  }
+
+  const refreshToken = cookies.jwt;
+
   try {
-    if (!cookies?.jwt) {
-      return res
-        .status(RESPONSE.CLIENT_ERROR.UNAUTHORIZED)
-        .json({ message: "Cookies introuvables." });
-    }
-
-    const refreshToken = cookies.jwt;
-
     const user = await prisma.user.findFirst({
       select: {
-        refreshToken,
+        id: true,
+        refreshToken: true,
       },
       where: {
         refreshToken: refreshToken,
@@ -43,18 +45,20 @@ const refresh = async (req, res) => {
             .status(RESPONSE.CLIENT_ERROR.FORBIDDEN)
             .json({ message: "Mauvais Token." });
         }
+
+        const accessToken = jwt.sign(
+          {
+            id: user.id,
+          },
+          process.env.ACCESS_TOKEN_SECRET,
+          { expiresIn: ACCESS_TOKEN_DURATION }
+        );
+
+        res
+          .status(RESPONSE.SUCCESSFUL.CREATED)
+          .json({ accessToken: accessToken });
       }
     );
-
-    const accessToken = jwt.sign(
-      {
-        id: user.id,
-      },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: ACCESS_TOKEN_DURATION }
-    );
-
-    res.status(RESPONSE.SUCCESSFUL.CREATED).json({ accessToken: accessToken });
   } catch (error) {
     res
       .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)

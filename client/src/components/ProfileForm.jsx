@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { getYear } from "date-fns";
 
 import useAuth from "@/hooks/useAuth";
-import { createProfile } from "@/api/userController";
+import { createProfile, updateProfile } from "@/api/profileController";
 import { profileSchema } from "@/lib/formSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -24,42 +22,60 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import DatePicker from "@/components/custom_ui/DatePicker";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import ButtonLoading from "@/components/custom_ui/ButtonLoading";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
-const ProfileForm = () => {
-  const currentDate = Date.now();
-  const maxYear = getYear(currentDate) - 150;
-  const minYear = getYear(currentDate) - 12;
-
+const ProfileForm = ({ profile = null, userId = null }) => {
   const form = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      username: "",
-      pseudonym: "",
+      username: profile?.username || "",
+      pseudonym: profile?.pseudonym || "",
       dateOfBirth: "",
-      gender: "",
+      gender: profile?.gender || "",
     },
   });
 
   const [loading, setLoading] = useState(false);
-  const { user, setUser } = useAuth();
+  const { setUser } = useAuth();
   const { toast } = useToast();
+
+  const axiosPrivate = useAxiosPrivate();
 
   const onSubmit = async (values) => {
     const { username, pseudonym, dateOfBirth, gender } = values;
     setLoading(true);
 
-    try {
-      const response = await createProfile(
-        user.id,
-        username,
-        pseudonym,
-        dateOfBirth,
-        gender,
-        user.accessToken
+    if (!!profile) {
+      const profileId = profile.id;
+
+      const response = await axiosPrivate.put("/profile", {
+        id: userId,
+        profileId: profileId,
+        username: username,
+        pseudonym: pseudonym,
+        gender: gender,
+        dateOfBirth: dateOfBirth,
+      });
+
+      toast({
+        title: "Bien.",
+        description: "Profile mis à jour avec succès.",
+      });
+
+      const newProfiles = user.profiles;
+      newProfiles.filter((p) => p.id !== profileId);
+      newProfiles.push(response.data);
+
+      setUser({
+        ...user,
+        profiles: [...newProfiles],
+      });
+    } else {
+      const response = await axiosPrivate.post(
+        "/profile",
+        JSON.stringify({ userId, username, pseudonym, dateOfBirth, gender })
       );
 
       toast({
@@ -68,23 +84,6 @@ const ProfileForm = () => {
       });
 
       setUser({ ...user, profiles: [...user.profiles, response.data] });
-    } catch (error) {
-      console.log(error);
-      if (!error?.response) {
-        toast({
-          variant: "destructive",
-          title: "Vous n'ête pas connecté à internet.",
-          description: "Veuillez réessayer.",
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: error.response.data.message,
-        });
-      }
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -117,46 +116,43 @@ const ProfileForm = () => {
             </FormItem>
           )}
         />
-        <div className="lg:flex lg:justify-between lg:gap-12 space-y-4 lg:space-y-0">
-          <Select
-            className="lg:w-2/5"
-            onValueChange={(value) => form.setValue("gender", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Genre" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="male">Homme</SelectItem>
-              <SelectItem value="female">Femme</SelectItem>
-            </SelectContent>
-          </Select>
-          <DatePicker
-            placeholder="Date de naîssance"
-            defaultValue={null}
-            fromYear={maxYear}
-            toYear={minYear}
-            onChange={(date) => {
-              if (date) {
-                form.setValue("dateOfBirth", date);
-              }
-            }}
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name="dateOfBirth"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="sr-only">Date de naissance</FormLabel>
+              <FormControl>
+                <Input type="date" placeholder="Date de naissance" {...field} />
+              </FormControl>
+              <FormMessage className="font-normal text-xs" />
+            </FormItem>
+          )}
+        />
+        <Select
+          className="lg:w-2/5"
+          defaultValue={profile?.gender}
+          onValueChange={(value) => form.setValue("gender", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Genre" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="male">Homme</SelectItem>
+            <SelectItem value="female">Femme</SelectItem>
+          </SelectContent>
+        </Select>
+
         <div className="text-right">
           <div className="mt-10">
-            {loading ? (
-              <ButtonLoading className="w-full lg:w-[initial]">
-                Chargement
-              </ButtonLoading>
-            ) : (
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full lg:w-[16ch]"
-              >
-                Créer
-              </Button>
-            )}
+            <Button
+              type="submit"
+              className="w-full lg:w-[24ch]"
+              disabled={loading}
+            >
+              {loading && "Chargement"}
+              {profile ? "Modifier" : "Créer"}
+            </Button>
           </div>
         </div>
       </form>

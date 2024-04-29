@@ -30,6 +30,8 @@ model Profile {
   gender      String
   image       String?
   ecgs        Ecg[]
+
+  @@unique([userId, username])
 }
 
 model Ecg {

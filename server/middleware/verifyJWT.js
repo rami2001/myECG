@@ -9,7 +9,7 @@ const verifyJWT = (req, res, next) => {
   if (!authHeader) {
     return res
       .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
-      .json({ message: "Token invalide." });
+      .json({ message: "Veuillez vous authentifier." });
   }
 
   const token = authHeader.split(" ")[1];

@@ -3,6 +3,7 @@ import useAuth from "@/hooks/useAuth";
 
 const DashboardPage = () => {
   const { user } = useAuth();
+
   return (
     <>
       <section className="p-8 sm:p-12 md:p-16">
