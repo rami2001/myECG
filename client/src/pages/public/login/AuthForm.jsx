@@ -95,30 +95,29 @@ const AuthForm = () => {
             </FormItem>
           )}
         />
-        <div>
-          <div className="lg:flex lg:flex-row-reverse lg:justify-between lg:align-middle mt-12">
-            {loading ? (
-              <ButtonLoading className="w-full lg:w-[initial]">
-                Chargement
-              </ButtonLoading>
-            ) : (
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full lg:w-[initial]"
-              >
-                Se connecter
-              </Button>
-            )}
+        <br />
+        <div className="flex flex-col space-y-2">
+          {loading ? (
+            <ButtonLoading className="w-full lg:w-[initial]">
+              Chargement
+            </ButtonLoading>
+          ) : (
             <Button
-              variant="link"
+              type="submit"
               disabled={loading}
-              className="w-full lg:w-[initial] text-center"
-              asChild
+              className="w-full lg:w-[initial]"
             >
-              <Link to="/home">&larr; Revenir à l'accueil</Link>
+              Se connecter
             </Button>
-          </div>
+          )}
+          <Button
+            variant="link"
+            disabled={loading}
+            className="w-full lg:w-[initial] text-center"
+            asChild
+          >
+            <Link to="/home">&larr; Revenir à l'accueil</Link>
+          </Button>
         </div>
       </form>
     </Form>

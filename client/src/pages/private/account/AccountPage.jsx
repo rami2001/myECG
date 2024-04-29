@@ -1,7 +1,6 @@
 import { Separator } from "@/components/ui/separator";
-import useAuth from "@/hooks/useAuth";
 
-const DashboardPage = () => {
+const AccountPage = () => {
   const { user } = useAuth();
   return (
     <>
@@ -13,4 +12,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default AccountPage;

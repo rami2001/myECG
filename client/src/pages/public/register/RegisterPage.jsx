@@ -8,19 +8,19 @@ import UserForm from "./UserForm";
 
 const RegisterPage = () => {
   return (
-    <section>
-      <Card className="my-16 container">
-        <CardTitle>
+    <section className="px-16">
+      <Card className="mt-12 text-center container py-12 max-w-screen-lg md:flex justify-center items-center">
+        <div className="w-full">
           <h1>Bienvenue !</h1>
-        </CardTitle>
-        <CardDescription>
           <h5>Vous avez déjà un compte ?</h5>
           <Button asChild variant="link">
             <Link to="/home/login">Connectez-vous.</Link>
           </Button>
-        </CardDescription>
+        </div>
         <Separator className="my-6 sm:hidden" />
-        <UserForm />
+        <div className="w-full">
+          <UserForm />
+        </div>
       </Card>
     </section>
   );

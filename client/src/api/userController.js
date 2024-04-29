@@ -23,5 +23,25 @@ export const auth = async (id, password) =>
     withCredentials: true,
   });
 
+export const createProfile = async (
+  id,
+  username,
+  pseudonym,
+  dateOfBirth,
+  gender,
+  accessToken
+) =>
+  await axios.post(
+    "/profile",
+    JSON.stringify({ id, username, pseudonym, dateOfBirth, gender }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    }
+  );
+
 export const logout = async () =>
   await axios.get(LOGOUT, { withCredentials: true });

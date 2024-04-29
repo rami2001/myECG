@@ -21,7 +21,11 @@ import LoginPage from "@/pages/public/login/LoginPage";
 import RegisterPage from "@/pages/public/register/RegisterPage";
 import AboutPage from "@/pages/public/about/AboutPage";
 import ApiPage from "@/pages/public/api/ApiPage";
-import PrivateLayout from "./pages/private/layout/PrivateLayout";
+
+import PrivateLayout from "@/pages/private/layout/PrivateLayout";
+import ProfilesPage from "@/pages/private/profiles/ProfilesPage";
+import DashboardPage from "@/pages/private/dasboard/DashboardPage";
+import AccountPage from "@/pages/private/account/AccountPage";
 
 const router = createBrowserRouter([
   {
@@ -57,7 +61,20 @@ const router = createBrowserRouter([
       {
         path: "dashboard/",
         element: <PrivateLayout />,
-        children: [{}],
+        children: [
+          {
+            path: "",
+            element: <DashboardPage />,
+          },
+          {
+            path: "account",
+            element: <AccountPage />,
+          },
+          {
+            path: "profiles",
+            element: <ProfilesPage />,
+          },
+        ],
       },
     ],
   },

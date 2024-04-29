@@ -31,7 +31,7 @@ const NavItem = ({ route, label }) => {
         {({ isActive }) => (
           <Button
             className={classNames(
-              "w-full text-lg md:text-base lg:text-sm lg:w-[10ch]",
+              "w-full text-lg md:text-sm lg:w-[10ch]",
               {
                 "bg-foreground text-background hover:bg-foreground/80 hover:no-underline w-full":
                   isActive,
@@ -52,7 +52,7 @@ const NavItem = ({ route, label }) => {
 
 const Header = () => {
   return (
-    <header className="md:rounded-t-3xl bg-background sticky top-0 border-b py-3 px-3 lg:px-8 flex justify-center items-center">
+    <header className="z-50 sticky top-0 bg-background/25 border-b py-4 px-4 lg:px-8 flex justify-center items-center backdrop-blur-sm">
       <Logo className="mx-auto lg:absolute lg:left-8" />
       <nav className="hidden lg:block mx-auto">
         <ul className="flex gap-5">
@@ -61,7 +61,7 @@ const Header = () => {
           ))}
         </ul>
       </nav>
-      <div className="hidden lg:flex ml-auto space-x-3 absolute right-12">
+      <div className="hidden lg:flex ml-auto space-x-4 absolute right-12">
         <Theme />
         <NavLink to="/home/login">
           {({ isActive }) => (
@@ -92,7 +92,7 @@ const Header = () => {
                     isActive,
                 },
                 {
-                  "bg-primary text-background hover:no-underline hover:bg-primary/80":
+                  "bg-primary text-primary-foreground hover:no-underline hover:bg-primary/80":
                     !isActive,
                 }
               )}

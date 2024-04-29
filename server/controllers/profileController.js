@@ -62,7 +62,7 @@ const getProfiles = async (req, res) => {
 
 // Création d'un profil
 const createProfile = async (req, res) => {
-  const { id, username, pseudonym } = req.body;
+  const { id, username, pseudonym, gender, dateOfBirth } = req.body;
 
   try {
     if (!id || !username || !pseudonym) {
@@ -77,17 +77,17 @@ const createProfile = async (req, res) => {
         .json({ message: "Ce profil existe déjà." });
     }
 
-    await prisma.profile.create({
+    const profile = await prisma.profile.create({
       data: {
         userId: id,
         username: username,
         pseudonym: pseudonym,
+        gender: gender,
+        dateOfBirth: dateOfBirth,
       },
     });
 
-    res
-      .status(RESPONSE.SUCCESSFUL.CREATED)
-      .json({ message: "Profil ajouté avec succès." });
+    res.status(RESPONSE.SUCCESSFUL.CREATED).json({ profile });
   } catch (error) {
     res
       .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)

@@ -2,8 +2,6 @@ import { NavLink } from "react-router-dom";
 
 import classNames from "classnames";
 
-import Logo from "@/components/icons/Logo";
-
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -16,7 +14,9 @@ import {
   UserRoundCog,
   LogOut,
 } from "lucide-react";
+import Logo from "@/components/icons/Logo";
 import DashboardLogo from "@/components/icons/DashboardLogo";
+import { Theme } from "@/components/icons/Theme";
 
 const navItems = [
   {
@@ -31,17 +31,17 @@ const navItems = [
   },
   {
     label: "Profiles",
-    route: "/profiles",
+    route: "profiles",
     icon: (className) => <UsersRound className={className} />,
   },
   {
     label: "Mon compte",
-    route: "/account",
+    route: "account",
     icon: (className) => <UserRoundCog className={className} />,
   },
   {
     label: "Paramètres",
-    route: "/settings",
+    route: "settings",
     icon: (className) => <Settings className={className} />,
   },
 ];
@@ -53,7 +53,7 @@ const MobileNavLink = ({ children, label, route }) => {
       end={route === "/dashboard/"}
       className={({ isActive }) =>
         classNames(
-          "rounded-lg flex items-center gap-4 px-4 py-3 transition duration-150",
+          "my-4 rounded-lg flex items-center gap-4 px-4 py-3 transition duration-150",
           {
             "bg-primary text-primary-foreground": isActive,
           },
@@ -89,7 +89,7 @@ const MobileHeader = () => {
           <h4 className="text-3xl">Menu</h4>
           <Separator className="my-4" />
           <nav>
-            <ul className="grid gap-4 text-lg font-medium">
+            <ul className="flex flex-col gap-4">
               <li>
                 {navItems.map((item) => (
                   <MobileNavLink
@@ -116,32 +116,52 @@ const MobileHeader = () => {
   );
 };
 
-const NavItem = ({ children, route, label }) => {
-  return (
-    <NavLink to={route} end={route === "/dashboard/"}>
-      <div className="group items-center justify-center rounded-full bg-transparent p-2 cursor-pointer hover:bg-primary transition-all duration-150">
-        {children}
-        <Heart className="s-5 group-hover:stroke-primary-foreground" />
-        <span className="sr-only">{label}</span>
-      </div>
-    </NavLink>
-  );
-};
-
 const Header = () => {
   return (
     <>
-      <header className="hidden lg:block bg-background border-r sticky h-full top-0 left-0 p-3">
+      <header className="hidden lg:flex flex-col w-16 bg-background border-r fixed h-screen top-0 left-0 px-3 py-4">
         <DashboardLogo />
-        <Separator className="my-2" />
+        <Separator className="mb-4 mt-2" />
+        <nav>
+          <ul>
+            <li>
+              {navItems.map((item) => (
+                <NavLink
+                  to={item.route}
+                  end={item.route === "/dashboard"}
+                  key={item.route}
+                  className={({ isActive }) =>
+                    classNames(
+                      "flex justify-center items-center p-2 rounded-md transition duration-100 mb-4",
+                      {
+                        "bg-primary hover:bg-primary/80 text-primary-foreground":
+                          isActive,
+                      },
+                      {
+                        "bg-transparent hover:bg-muted": !isActive,
+                      }
+                    )
+                  }
+                >
+                  {item.icon("s-5")}
+                  <span className="sr-only">{item.label}</span>
+                </NavLink>
+              ))}
+            </li>
+            <Separator className="mb-5" />
+            <li>
+              <Button className="flex justify-center items-center p-2 rounded-md transition duration-100">
+                <LogOut className="s-5" />
+                <span className="sr-only">Déconnexion</span>
+              </Button>
+            </li>
+          </ul>
+        </nav>
+        <div className="mt-auto">
+          <Theme />
+        </div>
       </header>
-      <nav>
-        <ul>
-          <li>
-            <NavLink></NavLink>
-          </li>
-        </ul>
-      </nav>
+
       <MobileHeader />
     </>
   );

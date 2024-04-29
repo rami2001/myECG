@@ -58,6 +58,7 @@ export const updateProfileSchema = z
     email,
     username,
     password,
+    gender,
     dateOfBirth,
     confirm: z.string({ required_error: "Champs requis." }),
   })
@@ -69,4 +70,11 @@ export const updateProfileSchema = z
 export const authSchema = z.object({
   id,
   password,
+});
+
+export const profileSchema = z.object({
+  username,
+  pseudonym,
+  dateOfBirth,
+  gender,
 });

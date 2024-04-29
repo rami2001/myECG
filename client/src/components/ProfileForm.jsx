@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 import { getYear } from "date-fns";
 
-import { register } from "@/api/userController";
+import useAuth from "@/hooks/useAuth";
+import { createProfile } from "@/api/userController";
+import { profileSchema } from "@/lib/formSchemas";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import DatePicker from "@/components/custom_ui/DatePicker";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -23,44 +24,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import DatePicker from "@/components/custom_ui/DatePicker";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { registerSchema } from "@/lib/formSchemas";
 import ButtonLoading from "@/components/custom_ui/ButtonLoading";
-import { Link } from "react-router-dom";
 
-const UserForm = ({ user = null }) => {
+const ProfileForm = () => {
   const currentDate = Date.now();
   const maxYear = getYear(currentDate) - 150;
   const minYear = getYear(currentDate) - 12;
 
   const form = useForm({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(profileSchema),
     defaultValues: {
-      email: "",
       username: "",
       pseudonym: "",
-      gender: null,
-      dateOfBirth: null,
-      password: "",
-      confirm: "",
+      dateOfBirth: "",
+      gender: "",
     },
   });
 
   const [loading, setLoading] = useState(false);
+  const { user, setUser } = useAuth();
   const { toast } = useToast();
 
   const onSubmit = async (values) => {
-    const { email, username, gender, dateOfBirth, password } = values;
+    const { username, pseudonym, dateOfBirth, gender } = values;
     setLoading(true);
 
     try {
-      await register(email, username, gender, dateOfBirth, password);
+      const response = await createProfile(
+        user.id,
+        username,
+        pseudonym,
+        dateOfBirth,
+        gender,
+        user.accessToken
+      );
 
       toast({
-        title: "Inscription avec succès !",
-        description: "Rendez-vous à la page de connexion.",
+        title: "Bien.",
+        description: "Profile ajouté avec succès.",
       });
+
+      setUser({ ...user, profiles: [...user.profiles, response.data] });
     } catch (error) {
+      console.log(error);
       if (!error?.response) {
         toast({
           variant: "destructive",
@@ -84,12 +93,12 @@ const UserForm = ({ user = null }) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="email"
+          name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="sr-only">Adresse e-mail</FormLabel>
+              <FormLabel className="sr-only">Username</FormLabel>
               <FormControl>
-                <Input placeholder="Adresse mail" {...field} />
+                <Input placeholder="Nom d'utilisateur" {...field} />
               </FormControl>
               <FormMessage className="font-normal text-xs" />
             </FormItem>
@@ -97,12 +106,12 @@ const UserForm = ({ user = null }) => {
         />
         <FormField
           control={form.control}
-          name="username"
+          name="pseudonym"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="sr-only">Username</FormLabel>
+              <FormLabel className="sr-only">Pseudonyme</FormLabel>
               <FormControl>
-                <Input placeholder="Nom d'utilisateur" {...field} />
+                <Input placeholder="Pseudonyme" {...field} />
               </FormControl>
               <FormMessage className="font-normal text-xs" />
             </FormItem>
@@ -133,40 +142,8 @@ const UserForm = ({ user = null }) => {
             }}
           />
         </div>
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="sr-only">Mot de passe</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="Mot de passe" {...field} />
-              </FormControl>
-              <FormMessage className="font-normal text-xs" />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="confirm"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="sr-only">
-                Confirmation du mot de passe
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="password"
-                  placeholder="Confirmation du mot de passe"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage className="font-normal text-xs" />
-            </FormItem>
-          )}
-        />
-        <div>
-          <div className="lg:flex lg:flex-row-reverse lg:justify-between lg:align-middle mt-12">
+        <div className="text-right">
+          <div className="mt-10">
             {loading ? (
               <ButtonLoading className="w-full lg:w-[initial]">
                 Chargement
@@ -175,19 +152,11 @@ const UserForm = ({ user = null }) => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full lg:w-[initial]"
+                className="w-full lg:w-[16ch]"
               >
-                S'inscrire
+                Créer
               </Button>
             )}
-            <Button
-              variant="link"
-              disabled={loading}
-              className="w-full lg:w-[initial] text-center"
-              asChild
-            >
-              <Link to="/home">&larr; Revenir à l'accueil</Link>
-            </Button>
           </div>
         </div>
       </form>
@@ -195,4 +164,4 @@ const UserForm = ({ user = null }) => {
   );
 };
 
-export default UserForm;
+export default ProfileForm;
