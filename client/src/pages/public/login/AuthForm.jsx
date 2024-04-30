@@ -39,6 +39,7 @@ const AuthForm = () => {
 
     try {
       const response = await auth(id, password);
+      
       setUser(response.data);
       setCurrentProfile(response.data.profiles[0]);
 

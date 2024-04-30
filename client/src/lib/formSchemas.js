@@ -28,7 +28,7 @@ const pseudonym = z
 
 const dateOfBirth = z.date({ required_error: "Champs requis." });
 
-const gender = z.enum(["male", "female"], {
+const gender = z.union([z.literal("male"), z.literal("female")], {
   required_error: "Veuillez préciser votre genre.",
   message: "Veuillez préciser votre genre.",
   path: ["gender"],

@@ -11,7 +11,11 @@ const useRefreshToken = () => {
         withCredentials: true,
       });
 
+      console.log(response);
+      console.log(user);
       setUser({ ...user, accessToken: response.data.accessToken });
+      console.log(user.accessToken);
+      console.log(response.data.accessToken);
 
       return response.data.accessToken;
     } catch (error) {

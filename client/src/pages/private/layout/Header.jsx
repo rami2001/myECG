@@ -174,7 +174,7 @@ const Header = () => {
             <Separator className="mb-5" />
             <li onClick={() => handleLogout()}>
               <Button className="flex justify-center items-center p-2 rounded-md transition duration-100 bg-transparent hover:bg-muted">
-                <LogOut className="s-5" />
+                <LogOut className="s-5 stroke-foreground" />
                 <span className="sr-only">Déconnexion</span>
               </Button>
             </li>

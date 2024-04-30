@@ -5,11 +5,9 @@ const {
   createProfile,
   updateProfile,
   deleteProfile,
-  getProfiles,
 } = require("../controllers/profileController");
 
 router
-  .get("/", getProfiles)
   .post("/", createProfile)
   .put("/", updateProfile)
   .delete("/", deleteProfile);

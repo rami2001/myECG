@@ -44,51 +44,10 @@ const createUserTransaction = async (
   });
 };
 
-// Vérifier si un utilisateur éxiste déjà
-const isExistingUser = async (email, username) => {
-  return (
-    (await prisma.user.findFirst({
-      select: {
-        email: true,
-        username: true,
-      },
-      where: {
-        OR: [{ email: email }, { username: username }],
-      },
-    })) !== null
-  );
-};
-
-// Vérifie si un utilisateur éxiste déjà
-const checkIfIsExistingUser = async (req, res) => {
-  const { email, username } = req.body;
-
-  try {
-    if (!email || !username) {
-      return res
-        .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
-        .json({ message: "Champ(s) manquant(s) !" });
-    }
-
-    if (await isExistingUser(email, username)) {
-      return res
-        .status(RESPONSE.CLIENT_ERROR.CONFLICT)
-        .json({ message: "Cet utilisateur éxiste déjà !" });
-    }
-
-    res.sendStatus(RESPONSE.SUCCESSFUL.OK);
-  } catch (error) {
-    res
-      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
-      .json({ message: error.message });
-  }
-};
-
 // Création d'un utilisateur (inscription)
 const register = async (req, res) => {
   const { email, username, password, pseudonym, dateOfBirth, gender } =
     req.body;
-
   try {
     if (!email || !username || !password || !gender || !dateOfBirth) {
       return res
@@ -96,24 +55,24 @@ const register = async (req, res) => {
         .json({ message: "Champ(s) manquant(s) !" });
     }
 
-    if (await isExistingUser(email, username)) {
-      return res
-        .status(RESPONSE.CLIENT_ERROR.CONFLICT)
-        .json({ message: "Cet utilisateur éxiste déjà !" });
-    }
-
     const hashedPassword = await hash(password);
 
-    await createUserTransaction(
-      email,
-      username,
-      hashedPassword,
-      pseudonym,
-      gender,
-      dateOfBirth
-    );
+    try {
+      await createUserTransaction(
+        email,
+        username,
+        hashedPassword,
+        pseudonym,
+        gender,
+        dateOfBirth
+      );
+    } catch (error) {
+      return res
+        .status(RESPONSE.CLIENT_ERROR.CONFLICT)
+        .json({ message: "Ce compte éxiste déjà." });
+    }
 
-    res.sendStatus(RESPONSE.SUCCESSFUL.CREATED);
+    return res.sendStatus(RESPONSE.SUCCESSFUL.CREATED);
   } catch (error) {
     res
       .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
@@ -121,4 +80,4 @@ const register = async (req, res) => {
   }
 };
 
-module.exports = { register, checkIfIsExistingUser };
+module.exports = { register };

@@ -13,6 +13,7 @@ import "./index.css";
 
 import Protected from "@/pages/Protected";
 import Missing from "@/pages/Missing";
+import Loading from "@/pages/Loading";
 
 import PublicLayout from "@/pages/public/layout/PublicLayout";
 
@@ -27,6 +28,7 @@ import ProfilesPage from "@/pages/private/profiles/ProfilesPage";
 import DashboardPage from "@/pages/private/dasboard/DashboardPage";
 import SettingsPage from "@/pages/private/settings/SettingsPage";
 import EcgPage from "@/pages/private/ecg/EcgPage";
+import PersistLogin from "./lib/PersistLogin";
 
 const router = createBrowserRouter([
   {
@@ -60,25 +62,35 @@ const router = createBrowserRouter([
       },
       {
         path: "dashboard/",
-        element: <PrivateLayout />,
+        element: <PersistLogin />,
         children: [
           {
             path: "",
-            element: <DashboardPage />,
-          },
-          {
-            path: "profiles",
-            element: <ProfilesPage />,
-          },
-          {
-            path: "settings",
-            element: <SettingsPage />,
-          },
-          {
-            path: "ecg",
-            element: <EcgPage />,
+            element: <PrivateLayout />,
+            children: [
+              {
+                path: "",
+                element: <DashboardPage />,
+              },
+              {
+                path: "profiles/",
+                element: <ProfilesPage />,
+              },
+              {
+                path: "settings",
+                element: <SettingsPage />,
+              },
+              {
+                path: "ecg",
+                element: <EcgPage />,
+              },
+            ],
           },
         ],
+      },
+      {
+        path: "/*",
+        element: <Missing />,
       },
     ],
   },
@@ -86,10 +98,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <AuthProvider>
+    <AuthProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <RouterProvider router={router} />
-      </AuthProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </AuthProvider>
   </React.StrictMode>
 );

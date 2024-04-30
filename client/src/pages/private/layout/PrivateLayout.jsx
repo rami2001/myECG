@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import Header from "@/pages/private/layout/Header";
 
-const PrivateLayout = ({ className }) => {
+const PrivateLayout = () => {
   return (
     <>
       <Header />

@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { format } from "date-fns";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import useAuth from "@/hooks/useAuth";
-import { createProfile, updateProfile } from "@/api/profileController";
 import { profileSchema } from "@/lib/formSchemas";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,56 +26,70 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
-const ProfileForm = ({ profile = null, userId = null }) => {
+const ProfileForm = ({ profile }) => {
   const form = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       username: profile?.username || "",
       pseudonym: profile?.pseudonym || "",
-      dateOfBirth: "",
+      dateOfBirth: profile?.dateOfBirth || "",
       gender: profile?.gender || "",
     },
   });
 
+  const axiosPrivate = useAxiosPrivate();
+  const { user, setUser } = useAuth();
+
   const [loading, setLoading] = useState(false);
-  const { setUser } = useAuth();
   const { toast } = useToast();
 
-  const axiosPrivate = useAxiosPrivate();
-
   const onSubmit = async (values) => {
-    const { username, pseudonym, dateOfBirth, gender } = values;
     setLoading(true);
 
-    if (!!profile) {
-      const profileId = profile.id;
+    if (profile) await handleUpdate(values);
+    else await handleCreate(values);
 
+    setLoading(false);
+  };
+
+  const handleUpdate = async ({ username, pseudonym, dateOfBirth, gender }) => {
+    const id = profile.id;
+
+    try {
       const response = await axiosPrivate.put("/profile", {
-        id: userId,
-        profileId: profileId,
-        username: username,
-        pseudonym: pseudonym,
-        gender: gender,
-        dateOfBirth: dateOfBirth,
+        id,
+        username,
+        pseudonym,
+        dateOfBirth,
+        gender,
       });
+
+      console.log("response : ", response.data);
 
       toast({
         title: "Bien.",
         description: "Profile mis à jour avec succès.",
       });
 
-      const newProfiles = user.profiles;
-      newProfiles.filter((p) => p.id !== profileId);
-      newProfiles.push(response.data);
+      const updatedProfile = response.data.updatedProfile;
 
-      setUser({
-        ...user,
-        profiles: [...newProfiles],
-      });
-    } else {
+      setUser((prevUser) => ({
+        ...prevUser,
+        profiles: prevUser.profiles.map((p) =>
+          p.id === updatedProfile.id ? updatedProfile : p
+        ),
+      }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCreate = async ({ username, pseudonym, dateOfBirth, gender }) => {
+    try {
+      const id = user.id;
       const response = await axiosPrivate.post(
         "/profile",
-        JSON.stringify({ userId, username, pseudonym, dateOfBirth, gender })
+        JSON.stringify({ id, username, pseudonym, dateOfBirth, gender })
       );
 
       toast({
@@ -83,9 +97,21 @@ const ProfileForm = ({ profile = null, userId = null }) => {
         description: "Profile ajouté avec succès.",
       });
 
-      setUser({ ...user, profiles: [...user.profiles, response.data] });
+      setUser({ ...user, profiles: [...user.profiles, response.data.profile] });
+    } catch (error) {
+      toast({
+        title: "Erreur.",
+        variant: "destructive",
+        description: error,
+      });
     }
   };
+
+  const defaultDateOfBirth = profile?.dateOfBirth
+    ? format(new Date(profile.dateOfBirth), "yyyy-MM-dd")
+    : "";
+
+  console.log(defaultDateOfBirth);
 
   return (
     <Form {...form}>
@@ -123,7 +149,12 @@ const ProfileForm = ({ profile = null, userId = null }) => {
             <FormItem>
               <FormLabel className="sr-only">Date de naissance</FormLabel>
               <FormControl>
-                <Input type="date" placeholder="Date de naissance" {...field} />
+                <Input
+                  type="date"
+                  placeholder="Date de naissance"
+                  {...field}
+                  value={defaultDateOfBirth}
+                />
               </FormControl>
               <FormMessage className="font-normal text-xs" />
             </FormItem>
@@ -131,8 +162,8 @@ const ProfileForm = ({ profile = null, userId = null }) => {
         />
         <Select
           className="lg:w-2/5"
-          defaultValue={profile?.gender}
           onValueChange={(value) => form.setValue("gender", value)}
+          defaultValue={profile?.gender}
         >
           <SelectTrigger>
             <SelectValue placeholder="Genre" />
@@ -150,8 +181,7 @@ const ProfileForm = ({ profile = null, userId = null }) => {
               className="w-full lg:w-[24ch]"
               disabled={loading}
             >
-              {loading && "Chargement"}
-              {profile ? "Modifier" : "Créer"}
+              {loading ? "Chargement" : profile ? "Modifier" : "Créer"}
             </Button>
           </div>
         </div>

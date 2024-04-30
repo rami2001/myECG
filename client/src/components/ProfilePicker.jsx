@@ -1,3 +1,5 @@
+import useAuth from "@/hooks/useAuth";
+
 import {
   Select,
   SelectContent,
@@ -9,8 +11,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "./ui/badge";
 
-const ProfilePicker = ({ className }) => {
+const ProfilePicker = () => {
   const { user, currentProfile, setCurrentProfile } = useAuth();
 
   const handleProfileChange = (value) =>
@@ -21,8 +24,11 @@ const ProfilePicker = ({ className }) => {
       defaultValue={currentProfile.id}
       onValueChange={(value) => handleProfileChange(value)}
     >
-      <SelectTrigger className={className}>
-        <SelectValue placeholder="Sélectionnez un profile" />
+      <SelectTrigger>
+        <SelectValue
+          defaultValue={currentProfile.id}
+          placeholder="Sélectionnez un profile"
+        />
       </SelectTrigger>
       <SelectContent>
         <ScrollArea>
@@ -35,12 +41,14 @@ const ProfilePicker = ({ className }) => {
                 value={profile.id}
                 className="text-muted-foreground"
               >
-                <h4 className="text-lg align-baseline">
-                  {profile.pseudonym || profile.username}
-                  <span className="text-xs text-muted-foreground ml-2 italic">
+                <div>
+                  <p className="text-sm align-baseline">
+                    {profile.pseudonym ? profile.pseudonym : profile.username}
+                  </p>
+                  <span className="text-xs text-muted-foreground">
                     (@{profile.username})
                   </span>
-                </h4>
+                </div>
               </SelectItem>
             ))}
           </SelectGroup>
