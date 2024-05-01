@@ -81,12 +81,7 @@ const auth = async (req, res) => {
       maxAge: ONE_DAY_IN_MILLISECONDS,
     });
 
-    delete user.password;
-    delete user.refreshToken;
-
-    res
-      .status(RESPONSE.SUCCESSFUL.CREATED)
-      .json({ ...user, accessToken: accessToken });
+    res.status(RESPONSE.SUCCESSFUL.CREATED).json({ accessToken });
   } catch (error) {
     res
       .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)

@@ -21,10 +21,6 @@ const refresh = async (req, res) => {
 
   try {
     const user = await prisma.user.findFirst({
-      select: {
-        id: true,
-        refreshToken: true,
-      },
       where: {
         refreshToken: refreshToken,
       },
@@ -54,9 +50,7 @@ const refresh = async (req, res) => {
           { expiresIn: ACCESS_TOKEN_DURATION }
         );
 
-        res
-          .status(RESPONSE.SUCCESSFUL.CREATED)
-          .json({ accessToken: accessToken });
+        res.status(RESPONSE.SUCCESSFUL.CREATED).json({ accessToken });
       }
     );
   } catch (error) {

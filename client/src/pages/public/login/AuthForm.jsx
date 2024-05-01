@@ -29,7 +29,7 @@ const AuthForm = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const { setUser, setCurrentProfile } = useAuth();
+  const { setAuth } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -39,13 +39,11 @@ const AuthForm = () => {
 
     try {
       const response = await auth(id, password);
-      
-      setUser(response.data);
-      setCurrentProfile(response.data.profiles[0]);
+
+      setAuth(response.data);
 
       navigate("/dashboard", { replace: true });
     } catch (error) {
-      console.log(error);
       if (!error?.response) {
         toast({
           variant: "destructive",

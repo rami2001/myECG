@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { format } from "date-fns";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import useAuth from "@/hooks/useAuth";
 import { profileSchema } from "@/lib/formSchemas";
+
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,21 +25,23 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
-const ProfileForm = ({ profile }) => {
+const ProfileForm = ({ profile, setProfiles }) => {
+  const defaultDateOfBirth = profile?.dateOfBirth
+    ? format(new Date(profile.dateOfBirth), "yyyy-MM-dd")
+    : "";
+
   const form = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       username: profile?.username || "",
       pseudonym: profile?.pseudonym || "",
-      dateOfBirth: profile?.dateOfBirth || "",
+      dateOfBirth: defaultDateOfBirth,
       gender: profile?.gender || "",
     },
   });
 
   const axiosPrivate = useAxiosPrivate();
-  const { user, setUser } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -48,8 +51,6 @@ const ProfileForm = ({ profile }) => {
 
     if (profile) await handleUpdate(values);
     else await handleCreate(values);
-
-    setLoading(false);
   };
 
   const handleUpdate = async ({ username, pseudonym, dateOfBirth, gender }) => {
@@ -64,54 +65,74 @@ const ProfileForm = ({ profile }) => {
         gender,
       });
 
-      console.log("response : ", response.data);
+      let updatedProfile = response.data;
 
-      toast({
-        title: "Bien.",
-        description: "Profile mis à jour avec succès.",
+      setProfiles((previous) => {
+        const newProfiles = [...previous];
+
+        const profileIndex = newProfiles.findIndex(
+          (p) => p.id === updatedProfile.id
+        );
+
+        newProfiles[profileIndex] = updatedProfile;
+
+        return newProfiles;
       });
 
-      const updatedProfile = response.data.updatedProfile;
-
-      setUser((prevUser) => ({
-        ...prevUser,
-        profiles: prevUser.profiles.map((p) =>
-          p.id === updatedProfile.id ? updatedProfile : p
-        ),
-      }));
+      toast({
+        title: "Fait !",
+        description: `${profile.username} mis à jour avec succès.`,
+      });
     } catch (error) {
-      console.log(error);
+      if (!error?.response) {
+        toast({
+          title: "Erreur.",
+          variant: "destructive",
+          description: "Vous ne semblez pas connecté à internet !",
+        });
+      } else {
+        toast({
+          title: "Erreur.",
+          variant: "destructive",
+          description: error,
+        });
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleCreate = async ({ username, pseudonym, dateOfBirth, gender }) => {
     try {
-      const id = user.id;
-      const response = await axiosPrivate.post(
+      const createdProfile = await axiosPrivate.post(
         "/profile",
-        JSON.stringify({ id, username, pseudonym, dateOfBirth, gender })
+        JSON.stringify({ username, pseudonym, dateOfBirth, gender })
       );
+
+      setProfiles((previous) => [...previous, createdProfile]);
 
       toast({
         title: "Bien.",
         description: "Profile ajouté avec succès.",
       });
-
-      setUser({ ...user, profiles: [...user.profiles, response.data.profile] });
     } catch (error) {
-      toast({
-        title: "Erreur.",
-        variant: "destructive",
-        description: error,
-      });
+      if (!error?.response) {
+        toast({
+          title: "Erreur.",
+          variant: "destructive",
+          description: "Vous ne semblez pas connecté à internet !",
+        });
+      } else {
+        toast({
+          title: "Erreur.",
+          variant: "destructive",
+          description: error,
+        });
+      }
+    } finally {
+      setLoading(false);
     }
   };
-
-  const defaultDateOfBirth = profile?.dateOfBirth
-    ? format(new Date(profile.dateOfBirth), "yyyy-MM-dd")
-    : "";
-
-  console.log(defaultDateOfBirth);
 
   return (
     <Form {...form}>
@@ -149,12 +170,7 @@ const ProfileForm = ({ profile }) => {
             <FormItem>
               <FormLabel className="sr-only">Date de naissance</FormLabel>
               <FormControl>
-                <Input
-                  type="date"
-                  placeholder="Date de naissance"
-                  {...field}
-                  value={defaultDateOfBirth}
-                />
+                <Input type="date" placeholder="Date de naissance" {...field} />
               </FormControl>
               <FormMessage className="font-normal text-xs" />
             </FormItem>

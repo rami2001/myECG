@@ -15,7 +15,7 @@ const createUserTransaction = async (
   dateOfBirth
 ) => {
   return await prisma.$transaction(async (prisma) => {
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email: email,
         username: username,
@@ -26,7 +26,7 @@ const createUserTransaction = async (
       },
     });
 
-    const profile = await prisma.profile.create({
+    await prisma.profile.create({
       data: {
         username: username,
         pseudonym: pseudonym,
@@ -39,15 +39,12 @@ const createUserTransaction = async (
         },
       },
     });
-
-    return { user, profile };
   });
 };
 
 // Création d'un utilisateur (inscription)
 const register = async (req, res) => {
-  const { email, username, password, pseudonym, dateOfBirth, gender } =
-    req.body;
+  const { email, username, password, dateOfBirth, gender } = req.body;
   try {
     if (!email || !username || !password || !gender || !dateOfBirth) {
       return res
@@ -62,7 +59,6 @@ const register = async (req, res) => {
         email,
         username,
         hashedPassword,
-        pseudonym,
         gender,
         dateOfBirth
       );

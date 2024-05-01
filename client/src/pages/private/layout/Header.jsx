@@ -37,11 +37,6 @@ const navItems = [
     route: "profiles",
     icon: (className) => <UsersRound className={className} />,
   },
-  // {
-  //   label: "Mon compte",
-  //   route: "account",
-  //   icon: (className) => <UserRoundCog className={className} />,
-  // },
   {
     label: "Paramètres",
     route: "settings",

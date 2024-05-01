@@ -28,7 +28,7 @@ import ProfilesPage from "@/pages/private/profiles/ProfilesPage";
 import DashboardPage from "@/pages/private/dasboard/DashboardPage";
 import SettingsPage from "@/pages/private/settings/SettingsPage";
 import EcgPage from "@/pages/private/ecg/EcgPage";
-import PersistLogin from "./lib/PersistLogin";
+import PersistLogin from "./components/PersistLogin";
 
 const router = createBrowserRouter([
   {
@@ -65,24 +65,28 @@ const router = createBrowserRouter([
         element: <PersistLogin />,
         children: [
           {
-            path: "",
-            element: <PrivateLayout />,
+            element: <Protected />,
             children: [
               {
-                path: "",
-                element: <DashboardPage />,
-              },
-              {
-                path: "profiles/",
-                element: <ProfilesPage />,
-              },
-              {
-                path: "settings",
-                element: <SettingsPage />,
-              },
-              {
-                path: "ecg",
-                element: <EcgPage />,
+                element: <PrivateLayout />,
+                children: [
+                  {
+                    path: "",
+                    element: <DashboardPage />,
+                  },
+                  {
+                    path: "profiles/",
+                    element: <ProfilesPage />,
+                  },
+                  {
+                    path: "settings",
+                    element: <SettingsPage />,
+                  },
+                  {
+                    path: "ecg",
+                    element: <EcgPage />,
+                  },
+                ],
               },
             ],
           },

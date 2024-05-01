@@ -3,7 +3,7 @@ import { REFRESH_ROUTE } from "@/api/routes";
 import useAuth from "@/hooks/useAuth";
 
 const useRefreshToken = () => {
-  const { user, setUser } = useAuth();
+  const { setAuth } = useAuth();
 
   const refresh = async () => {
     try {
@@ -11,11 +11,7 @@ const useRefreshToken = () => {
         withCredentials: true,
       });
 
-      console.log(response);
-      console.log(user);
-      setUser({ ...user, accessToken: response.data.accessToken });
-      console.log(user.accessToken);
-      console.log(response.data.accessToken);
+      setAuth(response.data);
 
       return response.data.accessToken;
     } catch (error) {

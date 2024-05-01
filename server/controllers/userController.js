@@ -26,23 +26,6 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// Vérifier si un utilisateur existe déjà
-const isExistingUser = async (id, email, username) => {
-  return (
-    (await prisma.user.findFirst({
-      select: {
-        id: true,
-        email: true,
-        username: true,
-      },
-      where: {
-        NOT: { id: id },
-        OR: [{ email: email }, { username: username }],
-      },
-    })) !== null
-  );
-};
-
 const updateUser = async (req, res) => {
   const { id, email, username, password, pseudonym } = req.body;
 
@@ -83,4 +66,27 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = { deleteUser, updateUser };
+const getUser = async (req, res) => {
+  try {
+    const user = await prisma.user.findFirst({
+      select: {
+        username: true,
+        pseudonym: true,
+        dateOfBirth: true,
+        gender: true,
+        email: true,
+      },
+      where: {
+        id: req.id,
+      },
+    });
+
+    return res.status(RESPONSE.SUCCESSFUL.OK).json({ ...user });
+  } catch (error) {
+    res
+      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
+module.exports = { deleteUser, updateUser, getUser };

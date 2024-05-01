@@ -24,9 +24,7 @@ const DashboardPage = () => {
             <CardDescription>Chaque profile est indépendant</CardDescription>
             <Separator />
           </CardHeader>
-          <CardContent>
-            <ProfilePicker />
-          </CardContent>
+          <CardContent>{/* <ProfilePicker /> */}</CardContent>
         </Card>
       </section>
     </>

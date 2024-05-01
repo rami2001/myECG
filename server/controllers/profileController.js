@@ -23,10 +23,10 @@ const profileWithUsername = async (id, profileId) => {
 
 // Création d'un profil
 const createProfile = async (req, res) => {
-  const { id, username, pseudonym, gender, dateOfBirth } = req.body;
+  const { username, pseudonym, gender, dateOfBirth } = req.body;
 
   try {
-    if (!id || !username || !pseudonym || !gender || !dateOfBirth) {
+    if (!username || !pseudonym || !gender || !dateOfBirth) {
       return res
         .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
         .json({ message: "Champ(s) manquant(s) !" });
@@ -35,7 +35,7 @@ const createProfile = async (req, res) => {
     try {
       const profile = await prisma.profile.create({
         data: {
-          userId: id,
+          userId: req.id,
           username: username,
           pseudonym: pseudonym,
           gender: gender,
@@ -43,7 +43,7 @@ const createProfile = async (req, res) => {
         },
       });
 
-      return res.status(RESPONSE.SUCCESSFUL.CREATED).json({ profile });
+      return res.status(RESPONSE.SUCCESSFUL.CREATED).json({ ...profile });
     } catch (error) {
       return res
         .status(RESPONSE.CLIENT_ERROR.CONFLICT)
@@ -80,7 +80,9 @@ const updateProfile = async (req, res) => {
         },
       });
 
-      return res.status(RESPONSE.SUCCESSFUL.CREATED).json({ updatedProfile });
+      return res
+        .status(RESPONSE.SUCCESSFUL.CREATED)
+        .json({ ...updatedProfile });
     } catch (error) {
       return res
         .status(RESPONSE.CLIENT_ERROR.CONFLICT)
@@ -130,4 +132,27 @@ const deleteProfile = async (req, res) => {
   }
 };
 
-module.exports = { createProfile, updateProfile, deleteProfile };
+// Récuperation des profiles
+const getProfiles = async (req, res) => {
+  try {
+    try {
+      const profiles = await prisma.profile.findMany({
+        where: {
+          userId: req.id,
+        },
+      });
+
+      return res.status(RESPONSE.SUCCESSFUL.OK).json([...profiles]);
+    } catch (error) {
+      return res
+        .status(RESPONSE.CLIENT_ERROR.CONFLICT)
+        .json({ message: "Impossible de trouver les profiles." });
+    }
+  } catch (error) {
+    res
+      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
+module.exports = { createProfile, updateProfile, deleteProfile, getProfiles };
