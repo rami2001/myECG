@@ -13,7 +13,6 @@ import {
   Settings,
   Activity,
   UsersRound,
-  UserRoundCog,
   LogOut,
 } from "lucide-react";
 import Logo from "@/components/icons/Logo";

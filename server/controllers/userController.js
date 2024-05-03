@@ -7,12 +7,10 @@ const prisma = new PrismaClient();
 
 // Suppression d'un utilisateur
 const deleteUser = async (req, res) => {
-  const { id } = req.body;
-
   try {
     await prisma.user.delete({
       where: {
-        id: id,
+        id: req.id,
       },
     });
 
@@ -26,39 +24,54 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Modification d'un utilisateur
 const updateUser = async (req, res) => {
-  const { id, email, username, password, pseudonym } = req.body;
+  const { email, username, gender, dateOfBirth } = req.body;
 
   try {
-    if (!id || !email || !username || !password || !pseudonym) {
-      return res
-        .status(RESPONSE.CLIENT_ERROR.BAD_REQUEST)
-        .json({ message: "Champ(s) manquant(s) !" });
-    }
+    try {
+      await prisma.$transaction(async (prisma) => {
+        const baseProfile = await prisma.profile.findFirst({
+          select: {
+            id: true,
+          },
+          where: {
+            username: oldUsername,
+            userId: req.id,
+          },
+        });
 
-    if (await isExistingUser(id, email, username)) {
+        await prisma.profile.update({
+          where: {
+            id: baseProfile.id,
+          },
+          data: {
+            username,
+            gender,
+            dateOfBirth,
+          },
+        });
+
+        await prisma.user.update({
+          where: {
+            id: req.id,
+          },
+          data: {
+            email,
+            username,
+            gender,
+            dateOfBirth,
+          },
+        });
+      });
+
+      res.sendStatus(RESPONSE.SUCCESSFUL.NO_CONTENT);
+    } catch (error) {
+      console.log(error);
       return res.status(RESPONSE.CLIENT_ERROR.CONFLICT).json({
         message: "Cette adresse mail ou ce nom d'utilisateur sont déjà pris.",
       });
     }
-
-    const hashedPassword = await hash(password);
-
-    await prisma.user.update({
-      where: {
-        id: id,
-      },
-      data: {
-        email: email,
-        username: username,
-        password: hashedPassword,
-        pseudonym: pseudonym,
-      },
-    });
-
-    res
-      .status(RESPONSE.SUCCESSFUL.CREATED)
-      .json({ message: "Informations mises à jour avec succès." });
   } catch (error) {
     res
       .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)

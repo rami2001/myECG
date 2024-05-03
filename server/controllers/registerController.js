@@ -10,17 +10,15 @@ const createUserTransaction = async (
   email,
   username,
   password,
-  pseudonym,
   gender,
   dateOfBirth
 ) => {
   return await prisma.$transaction(async (prisma) => {
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
-        email: email,
-        username: username,
+        email: email.toLowerCase(),
+        username: username.toLowerCase(),
         password: password,
-        pseudonym: pseudonym,
         dateOfBirth: new Date(dateOfBirth),
         gender: gender,
       },
@@ -28,8 +26,7 @@ const createUserTransaction = async (
 
     await prisma.profile.create({
       data: {
-        username: username,
-        pseudonym: pseudonym,
+        username: username.toLowerCase(),
         gender: gender,
         dateOfBirth: new Date(dateOfBirth),
         user: {

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { axiosPrivate } from "@/api/axios";
 import { USER_ROUTE } from "@/api/routes";
-import useAxiosPrivate from "./useAxiosPrivate";
+import useAxiosPrivate from "@/hooks//useAxiosPrivate";
 
 const useUser = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -21,7 +20,7 @@ const useUser = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  return [user, error, loading];
+  return { user, setUser, error, loading };
 };
 
 export default useUser;

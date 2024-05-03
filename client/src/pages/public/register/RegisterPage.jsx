@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
-import UserForm from "./UserForm";
+import UserForm from "../../../components/UserForm";
 
 const RegisterPage = () => {
   return (

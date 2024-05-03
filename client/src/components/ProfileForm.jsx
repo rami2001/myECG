@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { profileSchema } from "@/lib/formSchemas";
 
+import { PROFILE_ROUTE } from "@/api/routes";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 
-const ProfileForm = ({ profile, setProfiles }) => {
+const ProfileForm = ({ profile = null, setProfiles }) => {
   const defaultDateOfBirth = profile?.dateOfBirth
     ? format(new Date(profile.dateOfBirth), "yyyy-MM-dd")
     : "";
@@ -57,7 +58,7 @@ const ProfileForm = ({ profile, setProfiles }) => {
     const id = profile.id;
 
     try {
-      const response = await axiosPrivate.put("/profile", {
+      const response = await axiosPrivate.put(PROFILE_ROUTE, {
         id,
         username,
         pseudonym,
@@ -105,11 +106,11 @@ const ProfileForm = ({ profile, setProfiles }) => {
   const handleCreate = async ({ username, pseudonym, dateOfBirth, gender }) => {
     try {
       const createdProfile = await axiosPrivate.post(
-        "/profile",
+        PROFILE_ROUTE,
         JSON.stringify({ username, pseudonym, dateOfBirth, gender })
       );
 
-      setProfiles((previous) => [...previous, createdProfile]);
+      setProfiles((previous) => [...previous, createdProfile.data]);
 
       toast({
         title: "Bien.",
@@ -176,19 +177,30 @@ const ProfileForm = ({ profile, setProfiles }) => {
             </FormItem>
           )}
         />
-        <Select
-          className="lg:w-2/5"
-          onValueChange={(value) => form.setValue("gender", value)}
-          defaultValue={profile?.gender}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Genre" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="male">Homme</SelectItem>
-            <SelectItem value="female">Femme</SelectItem>
-          </SelectContent>
-        </Select>
+        <FormField
+          control={form.control}
+          name="gender"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="sr-only">Genre</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={(value) => form.setValue("gender", value)}
+                  defaultValue={profile?.gender}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Genre" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Homme</SelectItem>
+                    <SelectItem value="female">Femme</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage className="font-normal text-xs" />
+            </FormItem>
+          )}
+        />
 
         <div className="text-right">
           <div className="mt-10">

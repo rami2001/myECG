@@ -28,9 +28,6 @@ const auth = async (req, res) => {
       where: {
         OR: [{ email: id }, { username: id }],
       },
-      include: {
-        profiles: true,
-      },
     });
 
     if (user === null) {

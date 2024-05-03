@@ -39,9 +39,7 @@ const logout = async (req, res) => {
 
     res.sendStatus(RESPONSE.SUCCESSFUL.NO_CONTENT);
   } catch (error) {
-    res
-      .status(RESPONSE.SUCCESSFUL.NO_CONTENT)
-      .json({ message: error.message });
+    res.status(RESPONSE.SUCCESSFUL.NO_CONTENT).json({ message: error.message });
   }
 };
 

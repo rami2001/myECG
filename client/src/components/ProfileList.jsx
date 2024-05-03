@@ -1,9 +1,6 @@
 import { format, formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
-import { LoaderCircle } from "lucide-react";
-
-import useProfiles from "@/hooks/useProfiles";
 import useUser from "@/hooks/useUser";
 
 import ProfileForm from "@/components/ProfileForm";
@@ -31,6 +28,10 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import Loading from "./Loading";
+import Error from "./Error";
+import { PROFILE_ROUTE } from "@/api/routes";
+import useLogout from "@/hooks/useLogout";
 
 const Profile = ({ profile, setProfiles, user }) => {
   return (
@@ -93,10 +94,11 @@ const DeleteDialog = ({ profile, setProfiles }) => {
   const axiosPrivate = useAxiosPrivate();
 
   const { toast } = useToast();
+  const { logout } = useLogout();
 
   const handleDelete = async (id) => {
     try {
-      await axiosPrivate.delete("/profile", {
+      await axiosPrivate.delete(PROFILE_ROUTE, {
         data: {
           id: id,
         },
@@ -147,44 +149,23 @@ const DeleteDialog = ({ profile, setProfiles }) => {
   );
 };
 
-const LoadingProfile = () => {
-  return (
-    <div className="max-w-screen-md grid place-items-center">
-      <p className="text-muted-foreground italic font-thin mb-2">
-        Chargement des profiles
-      </p>
-      <LoaderCircle className="stroke-primary s-16 animate-spin" />
-    </div>
-  );
-};
+const ProfileList = ({ profiles, setProfiles, error, loading }) => {
+  const { user, userError, userLoading } = useUser();
 
-const Error = ({ error }) => {
-  return (
-    <div className="bg-destructive text-destructive-foreground max-w-screen-md text-center py-12 px-4 rounded-2xl">
-      <h2>Erreur !</h2>
-      <p className="text-muted-foreground italic text-sm mt-6">{error}</p>
-    </div>
-  );
-};
+  if (loading || userLoading)
+    return <Loading message={"Chargement des profiles"} />;
 
-const ProfileList = () => {
-  const [profiles, setProfiles, error, loading] = useProfiles();
-  const [user, userError, userLoading] = useUser();
-
-  if (loading || userLoading) return <LoadingProfile />;
-
-  if (error || userError) return <Error error={error || userError} />;
+  if (error || userError) return <Error message={userError || error} />;
 
   return (
-    profiles &&
-    profiles.map((profile) => (
-      <Profile
-        key={profile.id}
-        profile={profile}
-        setProfiles={setProfiles}
-        user={user}
-      />
-    ))
+    <ul>
+      {profiles &&
+        profiles.map((profile) => (
+          <li key={profile.username}>
+            <Profile profile={profile} setProfiles={setProfiles} user={user} />
+          </li>
+        ))}
+    </ul>
   );
 };
 

@@ -27,14 +27,14 @@ const pseudonym = z
   .max(24, "Ne doit pas faire plus de 24 caractères.");
 
 const gender = z
-  .string({ required_error: "Veuillez sélectionner votre genre." })
+  .string()
+  .min(1, "Veuillez préciser votre genre.")
   .refine((value) => value === "male" || value === "female", {
     message: "Les valeurs 'Homme' ou 'Femme' seulement sont permises.",
   });
 
 const dateOfBirth = z.coerce
   .date({
-    required_error: "Veuillez préciser votre date de naîssance",
     errorMap: (issue, { defaultError }) => ({
       message:
         issue.code === "invalid_date"
@@ -60,6 +60,13 @@ export const registerSchema = z
     path: ["confirm"],
   });
 
+export const updateUserSchema = z.object({
+  email,
+  username,
+  gender,
+  dateOfBirth,
+});
+
 export const authSchema = z.object({
   id,
   password,
@@ -71,3 +78,13 @@ export const profileSchema = z.object({
   dateOfBirth,
   gender,
 });
+
+export const passwordSchema = z
+  .object({
+    password,
+    confirm: z.string({ required_error: "Champs requis." }),
+  })
+  .refine((data) => data.password === data.confirm, {
+    message: "Doit correspondre au mot de passe.",
+    path: ["confirm"],
+  });

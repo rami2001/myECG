@@ -23,7 +23,7 @@ const useProfiles = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  return [profiles, setProfiles, loading, error];
+  return { profiles, setProfiles, loading, error };
 };
 
 export default useProfiles;

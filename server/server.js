@@ -18,6 +18,7 @@ const logoutRoute = require("./routes/logoutRoute");
 
 // Importation des routes privées
 const userRoute = require("./routes/userRoute");
+const userImageRoute = require("./routes/userImageRoute");
 const profileRoute = require("./routes/profileRoute");
 
 // Pour les tests
@@ -51,9 +52,10 @@ app.use("/logout", logoutRoute);
 // Nécessite l'ajout du middleware de vérification des tokens d'accès
 app.use(verifyJWT);
 app.use("/user", userRoute);
+app.use("/user/image", userImageRoute);
 app.use("/profile", profileRoute);
 
-app.all("*", (req, res) => {
+app.all("*", (_, res) => {
   res.status(400).send("Ressource introuvable !");
 });
 

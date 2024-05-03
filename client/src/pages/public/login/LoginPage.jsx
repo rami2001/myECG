@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import AuthForm from "./AuthForm";
+import AuthForm from "../../../components/AuthForm";
 
 const LoginPage = () => {
   return (
