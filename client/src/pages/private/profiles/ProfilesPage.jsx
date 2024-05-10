@@ -1,6 +1,6 @@
-import { Separator } from "@/components/ui/separator";
-
 import useProfiles from "@/hooks/useProfiles";
+
+import { Separator } from "@/components/ui/separator";
 
 import ProfileForm from "@/components/ProfileForm";
 import ProfileList from "@/components/ProfileList";
@@ -8,15 +8,15 @@ import ProfileList from "@/components/ProfileList";
 import { Card } from "@/components/ui/card";
 
 const ProfilesPage = () => {
-  const { profiles, setProfiles, error, loading } = useProfiles();
+  const { profiles, setProfiles } = useProfiles();
 
   return (
     <section className="p-8 sm:p-12 md:p-16">
-      <h1>Mes profiles</h1>
+      <h1>Mes profils</h1>
       <Separator className="my-8 px-2" />
 
       <section className="mt-4">
-        <h2>Créer un profile</h2>
+        <h2>Créer un profil</h2>
         <Separator className="my-8 max-w-screen-md" />
         <Card className="max-w-screen-md p-8">
           <ProfileForm profile={null} setProfiles={setProfiles} />
@@ -24,14 +24,9 @@ const ProfilesPage = () => {
       </section>
 
       <section className="mt-12">
-        <h2>Mes profiles</h2>
+        <h2>Liste des profils</h2>
         <Separator className="my-8 max-w-screen-md" />
-        <ProfileList
-          profiles={profiles}
-          setProfiles={setProfiles}
-          error={error}
-          loading={loading}
-        />
+        <ProfileList profiles={profiles} setProfiles={setProfiles} />
       </section>
     </section>
   );

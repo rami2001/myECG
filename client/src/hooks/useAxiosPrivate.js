@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { axiosPrivate, axiosPrivateImage } from "@/api/axios";
+import { axiosPrivate } from "@/api/axios";
 import useRefreshToken from "@/hooks/useRefreshToken";
 import useAuth from "@/hooks/useAuth";
 

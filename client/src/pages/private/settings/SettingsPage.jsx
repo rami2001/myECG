@@ -1,4 +1,8 @@
+import { USER_ROUTE } from "@/api/routes";
+
 import useUser from "@/hooks/useUser";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import useLogout from "@/hooks/useLogout";
 
 import UserForm from "@/components/UserForm";
 import Loading from "@/components/Loading";
@@ -22,11 +26,10 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import { USER_ROUTE } from "@/api/routes";
-import useLogout from "@/hooks/useLogout";
+import PasswordForm from "@/components/PasswordForm";
 
 const UserDialog = ({ user, setUser }) => {
   return (
@@ -98,6 +101,18 @@ const DeleteDialog = ({ setUser }) => {
   );
 };
 
+const PasswordDialog = () => {
+  return (
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Sécurité</DialogTitle>
+        <DialogDescription>Mettez à jour votre mot de passe.</DialogDescription>
+      </DialogHeader>
+      <PasswordForm />
+    </DialogContent>
+  );
+};
+
 const SettingsPage = () => {
   const { user, setUser, loading, error } = useUser();
 
@@ -140,6 +155,21 @@ const SettingsPage = () => {
                 <Button className="ml-auto">Supprimer</Button>
               </DialogTrigger>
               <DeleteDialog user={user} setUser={setUser} />
+            </Dialog>
+          </CardFooter>
+        </Card>
+        <Card className="max-w-screen-md">
+          <CardHeader>
+            <CardTitle>Sécurité</CardTitle>
+            <CardDescription>Mettez à jour votre mot de passe.</CardDescription>
+          </CardHeader>
+          <Separator className="mb-6" />
+          <CardFooter>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="ml-auto">Mettre à jour</Button>
+              </DialogTrigger>
+              <PasswordDialog />
             </Dialog>
           </CardFooter>
         </Card>

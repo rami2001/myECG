@@ -1,7 +1,9 @@
 import { format, formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
+import { PROFILE_ROUTE } from "@/api/routes";
 import useUser from "@/hooks/useUser";
+import useProfiles from "@/hooks/useProfiles";
 
 import ProfileForm from "@/components/ProfileForm";
 
@@ -30,8 +32,6 @@ import { Separator } from "@/components/ui/separator";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import Loading from "./Loading";
 import Error from "./Error";
-import { PROFILE_ROUTE } from "@/api/routes";
-import useLogout from "@/hooks/useLogout";
 
 const Profile = ({ profile, setProfiles, user }) => {
   return (
@@ -61,10 +61,10 @@ const Profile = ({ profile, setProfiles, user }) => {
       {profile.username !== user.username && (
         <>
           <Separator className="mb-4" />
-          <CardFooter className="flex">
+          <CardFooter className="flex gap-4">
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="ghost" className="ml-auto mr-4">
+                <Button variant="ghost" className="ml-auto">
                   Editer
                 </Button>
               </DialogTrigger>
@@ -94,7 +94,6 @@ const DeleteDialog = ({ profile, setProfiles }) => {
   const axiosPrivate = useAxiosPrivate();
 
   const { toast } = useToast();
-  const { logout } = useLogout();
 
   const handleDelete = async (id) => {
     try {
@@ -149,11 +148,12 @@ const DeleteDialog = ({ profile, setProfiles }) => {
   );
 };
 
-const ProfileList = ({ profiles, setProfiles, error, loading }) => {
+const ProfileList = ({ profiles, setProfiles }) => {
   const { user, userError, userLoading } = useUser();
+  const { error, loading } = useProfiles();
 
   if (loading || userLoading)
-    return <Loading message={"Chargement des profiles"} />;
+    return <Loading message={"Chargement des profils"} />;
 
   if (error || userError) return <Error message={userError || error} />;
 

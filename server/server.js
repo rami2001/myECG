@@ -20,6 +20,7 @@ const logoutRoute = require("./routes/logoutRoute");
 const userRoute = require("./routes/userRoute");
 const userImageRoute = require("./routes/userImageRoute");
 const profileRoute = require("./routes/profileRoute");
+const ecgRoute = require("./routes/ecgRoute");
 
 // Pour les tests
 const adminRoute = require("./routes/adminRoute");
@@ -54,6 +55,7 @@ app.use(verifyJWT);
 app.use("/user", userRoute);
 app.use("/user/image", userImageRoute);
 app.use("/profile", profileRoute);
+app.use("/ecg", ecgRoute);
 
 app.all("*", (_, res) => {
   res.status(400).send("Ressource introuvable !");

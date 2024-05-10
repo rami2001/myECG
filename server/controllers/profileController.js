@@ -140,6 +140,9 @@ const getProfiles = async (req, res) => {
         where: {
           userId: req.id,
         },
+        orderBy: {
+          id: "asc",
+        },
       });
 
       return res.status(RESPONSE.SUCCESSFUL.OK).json([...profiles]);

@@ -6,6 +6,7 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 const useProfiles = () => {
   const [profiles, setProfiles] = useState([]);
+  const [currentProfile, setCurrentProfile] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -18,12 +19,20 @@ const useProfiles = () => {
       .get(PROFILE_ROUTE)
       .then((response) => {
         setProfiles(response.data);
+        setCurrentProfile(response.data[0]);
       })
       .catch((error) => setError(error))
       .finally(() => setLoading(false));
-  }, []);
+  }, [axiosPrivate]);
 
-  return { profiles, setProfiles, loading, error };
+  return {
+    profiles,
+    setProfiles,
+    currentProfile,
+    setCurrentProfile,
+    loading,
+    error,
+  };
 };
 
 export default useProfiles;

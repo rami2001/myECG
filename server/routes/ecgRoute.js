@@ -2,11 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 
-const {
-  upload,
-  getImage,
-  deleteImage,
-} = require("../controllers/userImageController");
+const { upload } = require("../controllers/ecgController");
 const { RESPONSE } = require("../util/response");
 
 router.post("/", upload, (_, res, err) => {
@@ -18,9 +14,7 @@ router.post("/", upload, (_, res, err) => {
 
   res
     .status(RESPONSE.SUCCESSFUL.CREATED)
-    .json({ message: "Image chargée avec succès." });
+    .json({ message: "ECG soumis avec succès." });
 });
-
-router.get("/", getImage).delete("/", deleteImage);
 
 module.exports = router;

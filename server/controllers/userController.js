@@ -36,8 +36,10 @@ const updateUser = async (req, res) => {
             id: true,
           },
           where: {
-            username: oldUsername,
             userId: req.id,
+          },
+          orderBy: {
+            id: "asc",
           },
         });
 
@@ -79,6 +81,35 @@ const updateUser = async (req, res) => {
   }
 };
 
+const updatePassword = async (req, res) => {
+  const { password } = req.body;
+
+  try {
+    try {
+      await prisma.user.update({
+        where: {
+          id: req.id,
+        },
+        data: {
+          password: hash(password),
+        },
+      });
+
+      res.sendStatus(RESPONSE.SUCCESSFUL.NO_CONTENT);
+    } catch (error) {
+      console.log(error);
+      return res.status(RESPONSE.CLIENT_ERROR.CONFLICT).json({
+        message: "Cette adresse mail ou ce nom d'utilisateur sont déjà pris.",
+      });
+    }
+  } catch (error) {
+    res
+      .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
+// Informations utiles sur l'utilisateur
 const getUser = async (req, res) => {
   try {
     const user = await prisma.user.findFirst({
@@ -102,4 +133,4 @@ const getUser = async (req, res) => {
   }
 };
 
-module.exports = { deleteUser, updateUser, getUser };
+module.exports = { deleteUser, updateUser, getUser, updatePassword };
