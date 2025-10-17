@@ -16,11 +16,11 @@ const nav = [
   },
   {
     route: "/home/about",
-    label: "A propos",
+    label: "À propos",
   },
   {
     route: "/home/api",
-    label: "API",
+    label: "Dataset",
   },
 ];
 

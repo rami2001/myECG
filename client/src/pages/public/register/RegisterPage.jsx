@@ -9,7 +9,7 @@ import UserForm from "../../../components/UserForm";
 const RegisterPage = () => {
   return (
     <section className="px-16">
-      <Card className="mt-12 text-center container py-12 max-w-screen-lg md:flex justify-center items-center">
+      <Card className="mt-12 bg-background text-center container py-12 max-w-screen-lg md:flex justify-center items-center">
         <div className="w-full">
           <h1>Bienvenue !</h1>
           <h5>Vous avez déjà un compte ?</h5>

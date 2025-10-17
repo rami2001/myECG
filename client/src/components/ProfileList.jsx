@@ -1,9 +1,6 @@
-import { format, formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import SubProfilePictureUploader from "./SubProfilePictureUploader";
 
 import { PROFILE_ROUTE } from "@/api/routes";
-import useUser from "@/hooks/useUser";
-import useProfiles from "@/hooks/useProfiles";
 
 import ProfileForm from "@/components/ProfileForm";
 
@@ -29,64 +26,102 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import Loading from "./Loading";
 import Error from "./Error";
+import { Camera, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 
-const Profile = ({ profile, setProfiles, user }) => {
+const Profile = ({ profile, setProfiles }) => {
+  const axiosPrivate = useAxiosPrivate();
+  const [imageURL, setImageURL] = useState(null);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const response = await axiosPrivate.get(`profile/image/${profile.id}`, {
+          responseType: "blob",
+        });
+
+        const image = new Blob([response.data], { type: response.data.type });
+        const url = URL.createObjectURL(image);
+
+        setImageURL(url);
+      } catch (error) {
+        //
+      }
+    };
+
+    fetchImage();
+  }, []);
+
   return (
-    <Card key={profile.id} className="md:max-w-screen-md mt-8">
-      <CardHeader>
-        <CardTitle className="flex justify-between items-center">
-          {profile.pseudonym ? profile.pseudonym : profile.username}
-          {profile.username === user.username && (
-            <Badge className="max-w-fit font-medium">Profile de base</Badge>
-          )}
-        </CardTitle>
-        <CardDescription>@{profile.username}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2 text-sm">
-        <p>
-          {profile.gender === "male" ? "Né" : "Née"} le :{" "}
-          {format(profile.dateOfBirth, "do MMMM yyyy", { locale: fr })}
-        </p>
-        <p>
-          Age :{" "}
-          {formatDistanceToNow(profile.dateOfBirth, {
-            locale: fr,
-          })}
-        </p>
-        <p>Sexe : {profile.gender === "male" ? "Homme" : "Femme"}</p>
-      </CardContent>
-      {profile.username !== user.username && (
-        <>
-          <Separator className="mb-4" />
-          <CardFooter className="flex gap-4">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="ghost" className="ml-auto">
-                  Editer
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle className="mb-4">
-                    Modifier {profile.username}
-                  </DialogTitle>
-                </DialogHeader>
-                <ProfileForm profile={profile} setProfiles={setProfiles} />
-              </DialogContent>
-            </Dialog>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline">Supprimer</Button>
-              </DialogTrigger>
-              <DeleteDialog profile={profile} setProfiles={setProfiles} />
-            </Dialog>
+    <li>
+      <Card className="min-h-96 text-center rounded-xl bg-background shadow-md relative">
+        <CardHeader>
+          <div className="w-full flex justify-center mb-8">
+            <SubProfilePictureUploader
+              profile={profile}
+              setProfiles={setProfiles}
+            >
+              <Avatar className="size-24 mx-auto sm:m-[initial] cursor-pointer group">
+                <AvatarImage
+                  className="ml-auto group-hover:brightness-[.35] transition duration-150"
+                  src={imageURL}
+                />
+                <AvatarFallback className="group-hover:brightness-[.35] transition duration-150">
+                  {profile?.username || "None"}
+                </AvatarFallback>
+                <Camera className="opacity-0 transition duration-150 group-hover:opacity-100 absolute inset-0 m-auto size-9" />
+              </Avatar>
+            </SubProfilePictureUploader>
+          </div>
+          <CardTitle className="mt-8">
+            {profile?.pseudonym
+              ? profile?.pseudonym
+              : profile?.username || "Profil inconnu"}
+          </CardTitle>
+          <CardDescription>@{profile?.username || "Inconnu"}</CardDescription>
+        </CardHeader>
+        <Separator className="max-w-[80%] mx-auto" />
+        {!profile.pseudonym && (
+          <CardFooter className="grid mt-16">
+            <Badge className="mx-auto font-medium mb-4">Profile de base</Badge>
           </CardFooter>
-        </>
-      )}
-    </Card>
+        )}
+        {profile?.pseudonym && (
+          <>
+            <CardFooter className="grid mt-6 gap-3">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">Editer</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle className="mb-4">
+                      Modifier {profile?.username}
+                    </DialogTitle>
+                    <DialogDescription>
+                      Mettez à jour les informations liées au profil à travers
+                      ce formulaire.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Separator />
+                  <ProfileForm profile={profile} setProfiles={setProfiles} />
+                </DialogContent>
+              </Dialog>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="destructive">Supprimer</Button>
+                </DialogTrigger>
+                <DeleteDialog profile={profile} setProfiles={setProfiles} />
+              </Dialog>
+            </CardFooter>
+          </>
+        )}
+      </Card>
+    </li>
   );
 };
 
@@ -97,6 +132,8 @@ const DeleteDialog = ({ profile, setProfiles }) => {
 
   const handleDelete = async (id) => {
     try {
+      await axiosPrivate.delete(`profile/image/${id}`);
+
       await axiosPrivate.delete(PROFILE_ROUTE, {
         data: {
           id: id,
@@ -148,23 +185,52 @@ const DeleteDialog = ({ profile, setProfiles }) => {
   );
 };
 
-const ProfileList = ({ profiles, setProfiles }) => {
-  const { user, userError, userLoading } = useUser();
-  const { error, loading } = useProfiles();
+const ProfileList = ({ profiles, setProfiles, error, loading }) => {
+  if (loading) return <Loading message={"Chargement des profils"} />;
 
-  if (loading || userLoading)
-    return <Loading message={"Chargement des profils"} />;
-
-  if (error || userError) return <Error message={userError || error} />;
+  if (error) return <Error message={error.message || "Erreur inconnue"} />;
 
   return (
-    <ul>
+    <ul className="max-w-screen-xl min-h-96 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 justify-between">
       {profiles &&
         profiles.map((profile) => (
-          <li key={profile.username}>
-            <Profile profile={profile} setProfiles={setProfiles} user={user} />
-          </li>
+          <Profile
+            key={profile?.username}
+            profile={profile}
+            setProfiles={setProfiles}
+          />
         ))}
+      <li>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Card className="bg-background cursor-pointer hover:bg-card min-h-96 text-center rounded-xl transition duration-150 group grid place-items-center">
+              <CardHeader>
+                <div>
+                  <Plus
+                    className="size-16 group-hover:stroke-card-foreground stroke-muted mx-auto transition duration-150"
+                    strokeWidth={1}
+                  ></Plus>
+                  <p className="group-hover:text-card-foreground text-xs text-muted italic">
+                    Créer un nouveau profile
+                  </p>
+                </div>
+              </CardHeader>
+            </Card>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="mb-4">
+                Créer un nouveau profil
+              </DialogTitle>
+              <DialogDescription>
+                Saisissez les informations du profil que vous souhaitez créer.
+              </DialogDescription>
+            </DialogHeader>
+            <Separator />
+            <ProfileForm setProfiles={setProfiles} />
+          </DialogContent>
+        </Dialog>
+      </li>
     </ul>
   );
 };

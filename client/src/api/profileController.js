@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 import { PROFILE_ROUTE } from "@/api/routes";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
@@ -19,12 +21,14 @@ export const createProfile = async (
 export const deleteProfile = async (id, profileId) => {
   const axiosPrivate = useAxiosPrivate();
 
-  await axiosPrivate.delete(PROFILE_ROUTE, {
+  const profile = await axiosPrivate.delete(PROFILE_ROUTE, {
     data: {
       id: id,
       profileId: profileId,
     },
   });
+
+  
 };
 
 export const updateProfile = async (

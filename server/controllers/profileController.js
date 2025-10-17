@@ -1,6 +1,13 @@
+const fs = require("fs");
+const path = require("path");
+
 const { PrismaClient } = require("@prisma/client");
 
 const { RESPONSE } = require("../util/response");
+const {
+  ECG_IMAGE_DESTINATION,
+  USER_IMAGE_DESTINATION,
+} = require("../util/global");
 
 const prisma = new PrismaClient();
 
@@ -115,17 +122,43 @@ const deleteProfile = async (req, res) => {
         .json({ message: "Impossible de supprimer le profil de base." });
     }
 
-    // Supprimer le profil s'il n'y a pas d'erreur
     await prisma.profile.delete({
       where: {
         id: id,
       },
     });
 
+    if (profile.image) {
+      const filePath = path.join(
+        __dirname,
+        "../" + USER_IMAGE_DESTINATION + profile.image
+      );
+
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error(
+            "Erreur lors de la suppression de la photo de profil : ",
+            err
+          );
+        }
+      });
+    }
+
+    const folderPath = path.join(
+      __dirname,
+      "..",
+      ECG_IMAGE_DESTINATION,
+      String(req.id),
+      String(id)
+    );
+
+    fs.rm(folderPath, { recursive: true, force: true });
+
     return res
       .status(RESPONSE.SUCCESSFUL.NO_CONTENT)
       .json({ message: "Profil supprimé." });
   } catch (error) {
+    console.log(error);
     res
       .status(RESPONSE.SERVER_ERROR.INTERNAL_SERVER_ERROR)
       .json({ message: error });

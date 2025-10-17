@@ -15,16 +15,21 @@ const ProfilePicker = ({
   currentProfile,
   setCurrentProfile,
   disabled,
+  includeAllProfiles = false,
+  defaultValue = currentProfile?.id?.toString(),
+  className,
 }) => {
   const handleProfileChange = (value) => {
-    setCurrentProfile(profiles.find((p) => p.id === parseInt(value)));
+    if (value === "0") setCurrentProfile(0);
+    else setCurrentProfile(profiles.find((p) => p.id === parseInt(value)));
   };
 
   return (
     <Select
       disabled={disabled}
-      defaultValue={currentProfile?.id?.toString()}
+      defaultValue={defaultValue}
       onValueChange={(value) => handleProfileChange(value)}
+      className={className}
     >
       <SelectTrigger>
         <SelectValue placeholder="Sélectionnez un profile" />
@@ -34,6 +39,13 @@ const ProfilePicker = ({
           <SelectGroup>
             <SelectLabel>Profiles</SelectLabel>
             <SelectSeparator />
+            {includeAllProfiles && (
+              <SelectItem value="0">
+                <>
+                  <p className="text-sm align-baseline">Tous les profils</p>
+                </>
+              </SelectItem>
+            )}
             {profiles.map((profile) => (
               <SelectItem
                 key={profile.id}

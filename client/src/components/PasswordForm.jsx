@@ -19,9 +19,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import Loading from "./Loading";
 
-const PasswordForm = () => {
+const PasswordForm = ({ forgottenPassword = false, token = null }) => {
   const axiosPrivate = useAxiosPrivate();
 
   const [loading, setLoading] = useState(false);
@@ -40,7 +39,9 @@ const PasswordForm = () => {
     setLoading(true);
 
     try {
-      await axiosPrivate.patch(USER_ROUTE_PASSWORD, { password });
+      if (forgottenPassword)
+        await axiosPrivate.post("public/reset/password", { password, token });
+      else await axiosPrivate.patch(USER_ROUTE_PASSWORD, { password });
 
       toast({
         title: "Succès !",

@@ -2,31 +2,31 @@ import { Link } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Atom, HeartPulse, Scan, UserRoundPlus } from "lucide-react";
+import { Atom, Scan, UserRoundPlus, LineChart } from "lucide-react";
 
 const cards = [
   {
     title: "Un seul compte",
     description:
-      "Un seul compte pour les ECGs de votre entourage, grâce à l'option de création de profiles.",
+      "Un seul compte pour les ECGs de votre entourage, grâce à l'option de création de profils.",
     icon: (classname) => <UserRoundPlus className={classname} />,
   },
   {
     title: "Scannez",
     description:
-      "Grâce à une simple photo, numérisez votre ECG et obtenez un graphe mathématique.",
+      "D'une simple photo, scannez instantanément vos ECGs à partir de photos de votre appareil.",
     icon: (classname) => <Scan className={classname} />,
   },
   {
-    title: "Votre santé",
+    title: "Numérisez",
     description:
-      "Obtenez une estimation de votre état cardiaque grâce à l'informatique.",
-    icon: (classname) => <HeartPulse className={classname} />,
+      "Obtenez vos ECGs sous format numérique directement sur l'application ou téléchargez-les.",
+    icon: (classname) => <LineChart className={classname} />,
   },
   {
     title: "Participez",
     description:
-      "Vos données anonymes serviront à faire avancer la science grâce à la corrélation de l'ECG avec d'autres maladies via l'IA.",
+      "Partagez vos données anonymement auprès d'entités de confiance afin de faire avancer les recherches scientifiques.",
     icon: (classname) => <Atom className={classname} />,
   },
 ];
@@ -41,7 +41,7 @@ const HomePage = () => {
           <Separator className="px-16 my-8" />
           <section>
             <Button asChild className="px-24 py-6">
-              <Link to="api">Utilisez notre API</Link>
+              <Link to="api">Utilisez notre Dataset</Link>
             </Button>
             <p className="mt-2 text-muted-foreground text-sm font-thin italic">
               (Gratuitement)

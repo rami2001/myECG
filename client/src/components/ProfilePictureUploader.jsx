@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Separator } from "./ui/separator";
 import { useToast } from "./ui/use-toast";
 
 export function ProfilePictureUploader({ children, setUser }) {
@@ -82,10 +83,10 @@ export function ProfilePictureUploader({ children, setUser }) {
         <DialogHeader>
           <DialogTitle>Photo de profile</DialogTitle>
           <DialogDescription>
-            Selectionnez une photo de profile depuis votre ordinateur et
-            personnalisez votre compte.
+            Selectionnez la photo de profile que vous souhaitez depuis votre appareil.
           </DialogDescription>
         </DialogHeader>
+        <Separator/>
         <form onSubmit={handleSubmit}>
           <Input type="file" onChange={handleFileChange} />
           {error && <p className="text-xs text-destructive">{error}</p>}

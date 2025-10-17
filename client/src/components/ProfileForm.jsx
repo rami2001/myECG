@@ -37,7 +37,7 @@ const ProfileForm = ({ profile = null, setProfiles }) => {
     defaultValues: {
       username: profile?.username || "",
       pseudonym: profile?.pseudonym || "",
-      dateOfBirth: defaultDateOfBirth,
+      dateOfBirthP: defaultDateOfBirth,
       gender: profile?.gender || "",
     },
   });
@@ -54,9 +54,10 @@ const ProfileForm = ({ profile = null, setProfiles }) => {
     else await handleCreate(values);
   };
 
-  const handleUpdate = async ({ username, pseudonym, dateOfBirth, gender }) => {
+  const handleUpdate = async ({ username, pseudonym, dateOfBirthP, gender }) => {
     const id = profile.id;
-
+    const dateOfBirth = dateOfBirthP
+    
     try {
       const response = await axiosPrivate.put(PROFILE_ROUTE, {
         id,
@@ -103,11 +104,12 @@ const ProfileForm = ({ profile = null, setProfiles }) => {
     }
   };
 
-  const handleCreate = async ({ username, pseudonym, dateOfBirth, gender }) => {
+  const handleCreate = async ({ username, pseudonym, dateOfBirthP, gender }) => {
+    const dateOfBirth = dateOfBirthP
     try {
       const createdProfile = await axiosPrivate.post(
         PROFILE_ROUTE,
-        JSON.stringify({ username, pseudonym, dateOfBirth, gender })
+        JSON.stringify({ username, pseudonym, dateOfBirth : dateOfBirth, gender })
       );
 
       setProfiles((previous) => [...previous, createdProfile.data]);
@@ -166,7 +168,7 @@ const ProfileForm = ({ profile = null, setProfiles }) => {
         />
         <FormField
           control={form.control}
-          name="dateOfBirth"
+          name="dateOfBirthP"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="sr-only">Date de naissance</FormLabel>
@@ -206,7 +208,7 @@ const ProfileForm = ({ profile = null, setProfiles }) => {
           <div className="mt-10">
             <Button
               type="submit"
-              className="w-full lg:w-[24ch]"
+              className="w-full lg:w-[unset]"
               disabled={loading}
             >
               {loading ? "Chargement" : profile ? "Modifier" : "Créer"}

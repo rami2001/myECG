@@ -22,12 +22,17 @@ import LoginPage from "@/pages/public/login/LoginPage";
 import RegisterPage from "@/pages/public/register/RegisterPage";
 import AboutPage from "@/pages/public/about/AboutPage";
 import ApiPage from "@/pages/public/api/ApiPage";
+import PasswordResetPage from "@/pages/public/login/PasswordResetPage";
+import PasswordPage from "@/pages/public/login/PasswordPage";
+import DatasetPage from "@/pages/public/api/DatasetPage";
 
 import PrivateLayout from "@/pages/private/layout/PrivateLayout";
 import ProfilesPage from "@/pages/private/profiles/ProfilesPage";
 import DashboardPage from "@/pages/private/dasboard/DashboardPage";
 import SettingsPage from "@/pages/private/settings/SettingsPage";
 import EcgPage from "@/pages/private/ecg/EcgPage";
+import EcgDetail from "@/pages/private/ecg/EcgDetail";
+
 import PersistLogin from "./components/PersistLogin";
 
 const router = createBrowserRouter([
@@ -43,8 +48,16 @@ const router = createBrowserRouter([
             element: <HomePage />,
           },
           {
-            path: "login",
+            path: "login/",
             element: <LoginPage />,
+          },
+          {
+            path: "login/reset",
+            element: <PasswordResetPage />,
+          },
+          {
+            path: "login/reset/:token",
+            element: <PasswordPage />,
           },
           {
             path: "register",
@@ -55,7 +68,11 @@ const router = createBrowserRouter([
             element: <AboutPage />,
           },
           {
-            path: "api",
+            path: "api/:token",
+            element: <DatasetPage />,
+          },
+          {
+            path: "api/",
             element: <ApiPage />,
           },
         ],
@@ -85,6 +102,10 @@ const router = createBrowserRouter([
                   {
                     path: "ecg",
                     element: <EcgPage />,
+                  },
+                  {
+                    path: "ecg/:id",
+                    element: <EcgDetail />,
                   },
                 ],
               },

@@ -44,6 +44,17 @@ const dateOfBirth = z.coerce
   })
   .refine((date) => validateDateOfBirth(new Date(date)));
 
+const dateOfBirthP = z.coerce
+  .date({
+    errorMap: (issue, { defaultError }) => ({
+      message:
+        issue.code === "invalid_date"
+          ? "Vous devez avoir entre 12 et 150 ans."
+          : defaultError,
+    }),
+  })
+  .refine((date) => validateDateOfBirth(new Date(date), false));
+
 const id = z.union([email, username]);
 
 export const registerSchema = z
@@ -75,7 +86,7 @@ export const authSchema = z.object({
 export const profileSchema = z.object({
   username,
   pseudonym,
-  dateOfBirth,
+  dateOfBirthP,
   gender,
 });
 
@@ -88,3 +99,5 @@ export const passwordSchema = z
     message: "Doit correspondre au mot de passe.",
     path: ["confirm"],
   });
+
+export const emailSchema = z.object({ email });
